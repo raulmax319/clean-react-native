@@ -10,7 +10,6 @@
     "allowJs": true,
     "jsx": "react-native",
     "noEmit": true,
-    "isolatedModules": true,
     "experimentalDecorators": true,
     "sourceMap": true,
     "strict": true,

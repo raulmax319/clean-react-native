@@ -5,6 +5,7 @@
   "author": "Raul Max <raulmax319@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "test": "jest",
     "lint:staged": "npx lint-staged",
     "postinstall": "husky install"
   },
