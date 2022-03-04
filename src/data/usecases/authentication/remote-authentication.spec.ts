@@ -1,12 +1,15 @@
+import Chance from 'chance';
 import { HttpPostClientSpy } from '../../mocks/http-client.mock';
 import { RemoteAuthentication } from './remote-authentication';
+
+const faker = new Chance();
 
 type SutTypes = {
   sut: RemoteAuthentication;
   httpPostClientSpy: HttpPostClientSpy;
 };
 
-const makeSut = (url: string = 'any_url'): SutTypes => {
+const makeSut = (url: string = faker.url()): SutTypes => {
   const httpPostClient = new HttpPostClientSpy();
   const sut = new RemoteAuthentication(url, httpPostClient);
   return {
@@ -17,7 +20,7 @@ const makeSut = (url: string = 'any_url'): SutTypes => {
 
 describe('RemoteAuthentication', () => {
   test('Should call HttpPostClient with the correct URL', async () => {
-    const url = 'any_other_url';
+    const url = faker.url();
     const { sut, httpPostClientSpy } = makeSut(url);
     await sut.auth();
 
