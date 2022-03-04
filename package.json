@@ -5,6 +5,7 @@
   "author": "Raul Max <raulmax319@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "lint:staged": "npx lint-staged",
     "postinstall": "husky install"
   },
   "dependencies": {},
@@ -24,6 +25,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-react-native": "^4.0.0",
     "husky": "^7.0.4",
+    "lint-staged": "^12.3.4",
     "typescript": "^4.6.2"
   }
 }
