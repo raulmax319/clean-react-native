@@ -1,10 +1,7 @@
 import axios from 'axios';
 import { faker } from '@faker-js/faker';
-import { HttpPostParams } from '~/data/protocols/http';
+import { HttpPostParams, HttpStatusCode } from '~/data/protocols/http';
 import { AxiosHttpClient } from './axios-http-client';
-
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const makeRandomObject = (): Record<string, unknown> => {
   const obj: Record<string, unknown> = {};
@@ -14,6 +11,14 @@ const makeRandomObject = (): Record<string, unknown> => {
   }
   return obj;
 };
+
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxiosResult = {
+  data: makeRandomObject(),
+  status: faker.datatype.number(),
+};
+mockedAxios.post.mockResolvedValue(mockedAxiosResult);
 
 const makeSut = (): AxiosHttpClient => new AxiosHttpClient();
 
@@ -29,5 +34,15 @@ describe('AxiosHttpClient', () => {
     await sut.post(request);
 
     expect(mockedAxios.post).toHaveBeenCalledWith(request.url, request.body);
+  });
+
+  test('Should return the correct status and body', async () => {
+    const sut = makeSut();
+    const response = await sut.post(mockPostRequest());
+
+    expect(response).toEqual({
+      status: mockedAxiosResult.status,
+      body: mockedAxiosResult.data,
+    });
   });
 });
