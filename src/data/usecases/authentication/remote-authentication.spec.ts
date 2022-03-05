@@ -1,4 +1,5 @@
 import Chance from 'chance';
+import { mockAuthentication } from '../../../domain/mocks/authentication.mock';
 import { HttpPostClientSpy } from '../../mocks/http-client.mock';
 import { RemoteAuthentication } from './remote-authentication';
 
@@ -22,8 +23,16 @@ describe('RemoteAuthentication', () => {
   test('Should call HttpPostClient with the correct URL', async () => {
     const url = faker.url();
     const { sut, httpPostClientSpy } = makeSut(url);
-    await sut.auth();
+    await sut.auth(mockAuthentication());
 
     expect(httpPostClientSpy.url).toBe(url);
+  });
+
+  test('Should call HttpPostClient with the correct body', async () => {
+    const { sut, httpPostClientSpy } = makeSut();
+    const authenticationParams = mockAuthentication();
+    await sut.auth(authenticationParams);
+
+    expect(httpPostClientSpy.body).toEqual(authenticationParams);
   });
 });
