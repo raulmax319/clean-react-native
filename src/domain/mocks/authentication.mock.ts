@@ -1,14 +1,12 @@
-import Chance from 'chance';
+import { faker } from '@faker-js/faker';
 import { AccountModel } from '../models';
 import { AuthenticationParams } from '../usecases';
 
-const faker = new Chance();
-
 export const mockAuthentication = (): AuthenticationParams => ({
-  email: faker.email(),
-  password: faker.string(),
+  email: faker.internet.email(),
+  password: faker.internet.password(),
 });
 
 export const mockAccountModel = (): AccountModel => ({
-  accessToken: faker.guid(),
+  accessToken: faker.datatype.uuid(),
 });
