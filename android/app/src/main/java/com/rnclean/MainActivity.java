@@ -1,4 +1,4 @@
-package com.raulmax319.rnclean;
+package com.rnclean;
 
 import com.facebook.react.ReactActivity;
 
