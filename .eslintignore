@@ -2,3 +2,5 @@ node_modules/
 coverage/
 
 *.spec.ts
+babel.config.js
+metro.config.js
