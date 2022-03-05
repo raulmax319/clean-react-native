@@ -1,6 +1,6 @@
 import Chance from 'chance';
-import { mockAuthentication } from '../../../domain/mocks/authentication.mock';
-import { HttpPostClientSpy } from '../../mocks/http-client.mock';
+import { HttpPostClientSpy } from '~/data/mocks/http-client.mock';
+import { mockAuthentication } from '~/domain/mocks/authentication.mock';
 import { RemoteAuthentication } from './remote-authentication';
 
 const faker = new Chance();
