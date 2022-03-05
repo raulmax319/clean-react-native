@@ -3,7 +3,10 @@ import { HttpPostClientSpy } from '~/data/mocks/http-client.mock';
 import { HttpStatusCode } from '~/data/protocols/http/http-response';
 import { UnauthorizedError } from '~/domain/errors/unauthorized-error';
 import { UnexpectedError } from '~/domain/errors/unexpected-error';
-import { mockAuthentication } from '~/domain/mocks/authentication.mock';
+import {
+  mockAccountModel,
+  mockAuthentication,
+} from '~/domain/mocks/authentication.mock';
 import { AccountModel } from '~/domain/models/account-model';
 import { AuthenticationParams } from '~/domain/usecases/authentication';
 import { RemoteAuthentication } from './remote-authentication';
@@ -82,5 +85,18 @@ describe('RemoteAuthentication', () => {
     const promise = sut.auth(mockAuthentication());
 
     await expect(promise).rejects.toThrow(new UnexpectedError());
+  });
+
+  test('Should return an AccountModel if HttpPostClient returns 200', async () => {
+    const { sut, httpPostClientSpy } = makeSut();
+
+    const httpResult = mockAccountModel();
+    httpPostClientSpy.response = {
+      status: HttpStatusCode.ok,
+      body: httpResult,
+    };
+    const response = await sut.auth(mockAuthentication());
+
+    expect(response).toEqual(httpResult);
   });
 });
