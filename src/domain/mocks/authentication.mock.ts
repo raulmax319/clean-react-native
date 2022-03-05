@@ -1,6 +1,6 @@
 import Chance from 'chance';
-import { AccountModel } from '../models/account-model';
-import { AuthenticationParams } from '../usecases/authentication';
+import { AccountModel } from '../models';
+import { AuthenticationParams } from '../usecases';
 
 const faker = new Chance();
 

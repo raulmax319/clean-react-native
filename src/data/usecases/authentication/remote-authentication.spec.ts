@@ -1,14 +1,10 @@
 import Chance from 'chance';
-import { HttpPostClientSpy } from '~/data/mocks/http-client.mock';
-import { HttpStatusCode } from '~/data/protocols/http/http-response';
-import { UnauthorizedError } from '~/domain/errors/unauthorized-error';
-import { UnexpectedError } from '~/domain/errors/unexpected-error';
-import {
-  mockAccountModel,
-  mockAuthentication,
-} from '~/domain/mocks/authentication.mock';
-import { AccountModel } from '~/domain/models/account-model';
-import { AuthenticationParams } from '~/domain/usecases/authentication';
+import { HttpPostClientSpy } from '~/data/mocks';
+import { HttpStatusCode } from '~/data/protocols/http';
+import { UnauthorizedError, UnexpectedError } from '~/domain/errors';
+import { mockAccountModel, mockAuthentication } from '~/domain/mocks';
+import { AccountModel } from '~/domain/models';
+import { AuthenticationParams } from '~/domain/usecases';
 import { RemoteAuthentication } from './remote-authentication';
 
 const faker = new Chance();
