@@ -1,4 +1,6 @@
 import { HttpPostClient } from '~/data/protocols/http/http-post-client';
+import { HttpStatusCode } from '~/data/protocols/http/http-response';
+import { UnauthorizedError } from '~/domain/errors/unauthorized-error';
 import { AuthenticationParams } from '~/domain/usecases/authentication';
 
 export class RemoteAuthentication {
@@ -8,6 +10,16 @@ export class RemoteAuthentication {
   ) {}
 
   async auth(params: AuthenticationParams): Promise<void> {
-    await this.httpPostClient.post({ url: this.url, body: params });
+    const response = await this.httpPostClient.post({
+      url: this.url,
+      body: params,
+    });
+
+    switch (response.status) {
+      case HttpStatusCode.unauthorized:
+        throw new UnauthorizedError();
+      default:
+        return Promise.resolve();
+    }
   }
 }
