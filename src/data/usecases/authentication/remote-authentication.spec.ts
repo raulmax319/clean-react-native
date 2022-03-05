@@ -1,4 +1,4 @@
-import Chance from 'chance';
+import { faker } from '@faker-js/faker';
 import { HttpPostClientSpy } from '~/data/mocks';
 import { HttpStatusCode } from '~/data/protocols/http';
 import { UnauthorizedError, UnexpectedError } from '~/domain/errors';
@@ -7,14 +7,12 @@ import { AccountModel } from '~/domain/models';
 import { AuthenticationParams } from '~/domain/usecases';
 import { RemoteAuthentication } from './remote-authentication';
 
-const faker = new Chance();
-
 type SutTypes = {
   sut: RemoteAuthentication;
   httpPostClientSpy: HttpPostClientSpy<AuthenticationParams, AccountModel>;
 };
 
-const makeSut = (url: string = faker.url()): SutTypes => {
+const makeSut = (url: string = faker.internet.url()): SutTypes => {
   const httpPostClient = new HttpPostClientSpy<
     AuthenticationParams,
     AccountModel
@@ -28,7 +26,7 @@ const makeSut = (url: string = faker.url()): SutTypes => {
 
 describe('RemoteAuthentication', () => {
   test('Should call HttpPostClient with the correct URL', async () => {
-    const url = faker.url();
+    const url = faker.internet.url();
     const { sut, httpPostClientSpy } = makeSut(url);
     await sut.auth(mockAuthentication());
 
