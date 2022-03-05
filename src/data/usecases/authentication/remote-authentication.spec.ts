@@ -2,6 +2,7 @@ import Chance from 'chance';
 import { HttpPostClientSpy } from '~/data/mocks/http-client.mock';
 import { HttpStatusCode } from '~/data/protocols/http/http-response';
 import { UnauthorizedError } from '~/domain/errors/unauthorized-error';
+import { UnexpectedError } from '~/domain/errors/unexpected-error';
 import { mockAuthentication } from '~/domain/mocks/authentication.mock';
 import { RemoteAuthentication } from './remote-authentication';
 
@@ -38,7 +39,7 @@ describe('RemoteAuthentication', () => {
     expect(httpPostClientSpy.body).toEqual(authenticationParams);
   });
 
-  test('Should throw unauthorized if HttpPostClient returns 401', async () => {
+  test('Should throw UnauthorizedError if HttpPostClient returns 401', async () => {
     const { sut, httpPostClientSpy } = makeSut();
     httpPostClientSpy.response = {
       status: HttpStatusCode.unauthorized,
@@ -46,5 +47,35 @@ describe('RemoteAuthentication', () => {
     const promise = sut.auth(mockAuthentication());
 
     await expect(promise).rejects.toThrow(new UnauthorizedError());
+  });
+
+  test('Should throw UnexpectedError if HttpPostClient returns 400', async () => {
+    const { sut, httpPostClientSpy } = makeSut();
+    httpPostClientSpy.response = {
+      status: HttpStatusCode.badRequest,
+    };
+    const promise = sut.auth(mockAuthentication());
+
+    await expect(promise).rejects.toThrow(new UnexpectedError());
+  });
+
+  test('Should throw UnexpectedError if HttpPostClient returns 500', async () => {
+    const { sut, httpPostClientSpy } = makeSut();
+    httpPostClientSpy.response = {
+      status: HttpStatusCode.serverError,
+    };
+    const promise = sut.auth(mockAuthentication());
+
+    await expect(promise).rejects.toThrow(new UnexpectedError());
+  });
+
+  test('Should throw UnexpectedError if HttpPostClient returns 404', async () => {
+    const { sut, httpPostClientSpy } = makeSut();
+    httpPostClientSpy.response = {
+      status: HttpStatusCode.badRequest,
+    };
+    const promise = sut.auth(mockAuthentication());
+
+    await expect(promise).rejects.toThrow(new UnexpectedError());
   });
 });
