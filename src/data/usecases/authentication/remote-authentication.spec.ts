@@ -4,17 +4,22 @@ import { HttpStatusCode } from '~/data/protocols/http/http-response';
 import { UnauthorizedError } from '~/domain/errors/unauthorized-error';
 import { UnexpectedError } from '~/domain/errors/unexpected-error';
 import { mockAuthentication } from '~/domain/mocks/authentication.mock';
+import { AccountModel } from '~/domain/models/account-model';
+import { AuthenticationParams } from '~/domain/usecases/authentication';
 import { RemoteAuthentication } from './remote-authentication';
 
 const faker = new Chance();
 
 type SutTypes = {
   sut: RemoteAuthentication;
-  httpPostClientSpy: HttpPostClientSpy;
+  httpPostClientSpy: HttpPostClientSpy<AuthenticationParams, AccountModel>;
 };
 
 const makeSut = (url: string = faker.url()): SutTypes => {
-  const httpPostClient = new HttpPostClientSpy();
+  const httpPostClient = new HttpPostClientSpy<
+    AuthenticationParams,
+    AccountModel
+  >();
   const sut = new RemoteAuthentication(url, httpPostClient);
   return {
     sut,
