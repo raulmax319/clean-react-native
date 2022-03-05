@@ -1,5 +1,7 @@
 import Chance from 'chance';
 import { HttpPostClientSpy } from '~/data/mocks/http-client.mock';
+import { HttpStatusCode } from '~/data/protocols/http/http-response';
+import { UnauthorizedError } from '~/domain/errors/unauthorized-error';
 import { mockAuthentication } from '~/domain/mocks/authentication.mock';
 import { RemoteAuthentication } from './remote-authentication';
 
@@ -34,5 +36,15 @@ describe('RemoteAuthentication', () => {
     await sut.auth(authenticationParams);
 
     expect(httpPostClientSpy.body).toEqual(authenticationParams);
+  });
+
+  test('Should throw unauthorized if HttpPostClient returns 401', async () => {
+    const { sut, httpPostClientSpy } = makeSut();
+    httpPostClientSpy.response = {
+      status: HttpStatusCode.unauthorized,
+    };
+    const promise = sut.auth(mockAuthentication());
+
+    await expect(promise).rejects.toThrow(new UnauthorizedError());
   });
 });
