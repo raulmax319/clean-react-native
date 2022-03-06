@@ -5,13 +5,17 @@ import {
   initialWindowMetrics,
 } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import { ThemeProvider } from 'styled-components/native';
 import { RootNavigator } from './root-navigator';
+import theme from '~/presentation/theme';
 
 enableScreens();
 
 const App: React.FC = () => (
   <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-    <RootNavigator />
+    <ThemeProvider theme={theme}>
+      <RootNavigator />
+    </ThemeProvider>
   </SafeAreaProvider>
 );
 
