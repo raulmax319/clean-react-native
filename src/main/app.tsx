@@ -1,16 +1,18 @@
+import 'react-native-gesture-handler';
 import React from 'react';
-import { Text, View, ViewStyle } from 'react-native';
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
+import { enableScreens } from 'react-native-screens';
+import { RootNavigator } from './root-navigator';
 
-const viewStyle = {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-} as ViewStyle;
+enableScreens();
 
 const App: React.FC = () => (
-  <View style={viewStyle}>
-    <Text>Hello, world!</Text>
-  </View>
+  <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+    <RootNavigator />
+  </SafeAreaProvider>
 );
 
 export default App;
