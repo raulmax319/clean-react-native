@@ -2,12 +2,12 @@ import { Animated, TextInputProps } from 'react-native';
 import { TextInput as RNTextInput } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 
-export const TextInput = styled(RNTextInput).attrs<TextInputProps>({
-  placeholderTextColor: '#999',
-  selectionColor: '#f84e69',
+export const TextInput = styled(RNTextInput).attrs<TextInputProps>((props) => ({
+  placeholderTextColor: props.theme.colors.placeholder,
+  selectionColor: props.theme.colors.primary,
   autoCapitalize: 'none',
   keyboardType: 'email-address',
-})`
+}))`
   font-size: 20px;
   font-weight: 900;
   color: #fdfdfd;
@@ -18,9 +18,9 @@ export const Container = styled.View`
   width: 100%;
   height: 60px;
   border-width: 1px;
-  border-color: #212121;
+  border-color: ${(props) => props.theme.colors.border};
   border-radius: 4px;
-  background-color: #373737;
+  background-color: ${(props) => props.theme.colors.surface};
 `;
 
 export const Label = styled(Animated.Text)`

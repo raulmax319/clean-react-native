@@ -1,17 +1,20 @@
 import React from 'react';
-import Input from './input';
-import LoginTabs from './login-tabs';
+import {
+  Circle,
+  Input,
+  PrimaryButton,
+  TabView,
+} from '~/presentation/components';
 import {
   Container,
   Footer,
   Form,
-  Header,
-  RedCircle,
-  RedCircleSmall,
+  Head,
   SignUp,
   SubButton,
 } from './login.styles';
-import { PrimaryButton } from './primary-button';
+
+const tabItems = [{ label: 'Login' }, { label: 'Register' }];
 
 const Login: React.FC = () => {
   const handleLogin = () => {
@@ -20,9 +23,9 @@ const Login: React.FC = () => {
 
   return (
     <Container>
-      <Header>
-        <LoginTabs />
-      </Header>
+      <Head>
+        <TabView data={tabItems} />
+      </Head>
       <Form>
         <Input label="Email" />
         <Input label="Password" secureTextEntry />
@@ -34,8 +37,8 @@ const Login: React.FC = () => {
           Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
         </SignUp>
       </Footer>
-      <RedCircle />
-      <RedCircleSmall />
+      <Circle top left />
+      <Circle small bottom right />
     </Container>
   );
 };

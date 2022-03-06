@@ -10,12 +10,12 @@ export const Container = styled.View`
 
 export const TabItem = styled.View<TabProps>`
   border-bottom-width: 3px;
-  border-bottom-color: #fdfdfd;
+  border-bottom-color: ${(props) => props.theme.colors.border};
 
   ${(props) =>
     props.selected &&
     `
-    border-bottom-color: rgba(0,0,0,0.35);
+    border-bottom-color: ${props.theme.colors.activeBorder};
   `}
 `;
 
@@ -23,11 +23,11 @@ export const Label = styled.Text<TabProps>`
   font-size: 16px;
   font-weight: 900;
   padding: 15px 30px 15px 10px;
-  color: #fdfdfd;
+  color: ${(props) => props.theme.colors.border};
 
   ${(props) =>
     props.selected &&
     `
-    color: rgba(0,0,0,0.35);
+    color: ${props.theme.colors.activeBorder};
   `}
 `;
