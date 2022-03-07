@@ -6,7 +6,7 @@ import {
 } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { ThemeProvider } from 'styled-components/native';
-import { RootNavigator } from './root-navigator';
+import { RootNavigator } from '../presentation/router';
 import theme from '~/presentation/theme';
 
 enableScreens();
