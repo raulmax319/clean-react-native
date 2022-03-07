@@ -9,4 +9,5 @@ export default {
   placeholder: '#999',
   border: '#212121',
   activeBorder: '#f2f2f2',
+  white: '#fdfdfd',
 };

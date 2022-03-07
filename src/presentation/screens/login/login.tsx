@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   Circle,
   Input,
   PrimaryButton,
@@ -39,6 +40,7 @@ const Login: React.FC = () => {
       </Footer>
       <Circle top left />
       <Circle small bottom right />
+      <ActivityIndicator visible={false} />
     </Container>
   );
 };
