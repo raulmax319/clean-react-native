@@ -6,7 +6,7 @@ type Props = ModalProps;
 
 const ActivityIndicator: React.FC<Props> = ({ visible }) => {
   return (
-    <ModalContainer visible={visible}>
+    <ModalContainer visible={visible} testID="activity-indicator">
       <Backdrop>
         <Content>
           <Loading size="large" />
