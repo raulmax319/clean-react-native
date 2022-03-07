@@ -1,15 +1,27 @@
 import React from 'react';
 import { ActivityIndicator as Loading, ModalProps } from 'react-native';
-import { Content, ModalContainer, Backdrop } from './activity-indicator.styles';
+import { LoginContext } from '~/presentation/contexts';
+import {
+  Content,
+  ModalContainer,
+  Backdrop,
+  ErrorText,
+} from './activity-indicator.styles';
 
 type Props = ModalProps;
 
-const ActivityIndicator: React.FC<Props> = ({ visible }) => {
+const ActivityIndicator: React.FC<Props> = () => {
+  const { isLoading, errorMessage } = React.useContext(LoginContext);
+
   return (
-    <ModalContainer visible={visible} testID="activity-indicator">
+    <ModalContainer
+      visible={isLoading || !!errorMessage}
+      testID="activity-indicator"
+    >
       <Backdrop>
         <Content>
-          <Loading size="large" />
+          {isLoading && <Loading size="large" />}
+          {!!errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         </Content>
       </Backdrop>
     </ModalContainer>

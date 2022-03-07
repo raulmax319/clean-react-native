@@ -6,6 +6,7 @@ import {
   PrimaryButton,
   TabView,
 } from '~/presentation/components';
+import { LoginContextProvider } from '~/presentation/contexts';
 import {
   Container,
   Footer,
@@ -24,23 +25,25 @@ const Login: React.FC = () => {
 
   return (
     <Container>
-      <Head>
-        <TabView data={tabItems} />
-      </Head>
-      <Form>
-        <Input label="Email" />
-        <Input label="Password" secureTextEntry />
-      </Form>
-      <Footer>
-        <SubButton>Forgot password?</SubButton>
-        <PrimaryButton onPress={handleLogin}>Log in</PrimaryButton>
-        <SignUp>
-          Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
-        </SignUp>
-      </Footer>
-      <Circle top left />
-      <Circle small bottom right />
-      <ActivityIndicator visible={false} />
+      <LoginContextProvider>
+        <Head>
+          <TabView data={tabItems} />
+        </Head>
+        <Form>
+          <Input label="Email" />
+          <Input label="Password" secureTextEntry />
+        </Form>
+        <Footer>
+          <SubButton>Forgot password?</SubButton>
+          <PrimaryButton onPress={handleLogin}>Log in</PrimaryButton>
+          <SignUp>
+            Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
+          </SignUp>
+        </Footer>
+        <Circle top left />
+        <Circle small bottom right />
+        <ActivityIndicator />
+      </LoginContextProvider>
     </Container>
   );
 };
