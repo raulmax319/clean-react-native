@@ -1,15 +1,9 @@
 import React from 'react';
+import { PressableProps } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import { Label, Button } from './primary-button.styles';
 
-type PrimaryButtonProps = {
-  onPress: () => void;
-};
-
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({
-  children,
-  ...props
-}) => {
+const PrimaryButton: React.FC<PressableProps> = ({ children, ...props }) => {
   const { colors } = useTheme();
 
   return (
@@ -18,8 +12,9 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         ...(pressed && { backgroundColor: colors.highlight }),
       })}
       {...props}
+      testID="primary-button"
     >
-      <Label>{children}</Label>
+      <Label disabled={props.disabled}>{children}</Label>
     </Button>
   );
 };

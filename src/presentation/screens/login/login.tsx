@@ -35,7 +35,9 @@ const Login: React.FC = () => {
         </Form>
         <Footer>
           <SubButton>Forgot password?</SubButton>
-          <PrimaryButton onPress={handleLogin}>Log in</PrimaryButton>
+          <PrimaryButton disabled onPress={handleLogin}>
+            Log in
+          </PrimaryButton>
           <SignUp>
             Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
           </SignUp>
