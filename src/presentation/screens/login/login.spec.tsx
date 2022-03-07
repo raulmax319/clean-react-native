@@ -4,12 +4,15 @@ import Login from './login';
 import { ThemeProvider } from 'styled-components/native';
 import theme from '~/presentation/theme';
 
-describe('Login Component', () => {
-  test('Should render the Login screen', () => {
-    render(
+describe('Login Screen', () => {
+  test('Should not render ActivityIndicator on start', () => {
+    const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <Login />
       </ThemeProvider>,
     );
+    const activityIndicator = getByTestId('activity-indicator');
+
+    expect(activityIndicator.children.length).toBe(0);
   });
 });
