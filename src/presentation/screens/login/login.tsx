@@ -30,8 +30,8 @@ const Login: React.FC = () => {
           <TabView data={tabItems} />
         </Head>
         <Form>
-          <Input label="Email" />
-          <Input label="Password" secureTextEntry />
+          <Input label="Email" defaultValue="" />
+          <Input label="Password" defaultValue="" secureTextEntry />
         </Form>
         <Footer>
           <SubButton>Forgot password?</SubButton>

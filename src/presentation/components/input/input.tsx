@@ -1,6 +1,6 @@
 import React from 'react';
-import { TextInputProps } from 'react-native';
-import { Container, Label, TextInput } from './input.styles';
+import { TextInputProps, View } from 'react-native';
+import { Label, TextInput } from './input.styles';
 
 type InputProps = {
   label: string;
@@ -8,12 +8,10 @@ type InputProps = {
 
 const Input: React.FC<InputProps> = ({ label, ...otherProps }) => {
   return (
-    <>
+    <View testID={`${label.toLowerCase()}-input`}>
       <Label>{label}</Label>
-      <Container>
-        <TextInput {...otherProps} />
-      </Container>
-    </>
+      <TextInput {...otherProps} />
+    </View>
   );
 };
 

@@ -11,17 +11,19 @@ import {
 type Props = ModalProps;
 
 const ActivityIndicator: React.FC<Props> = () => {
-  const { isLoading, errorMessage } = React.useContext(LoginContext);
+  const { isLoading, errorState } = React.useContext(LoginContext);
 
   return (
     <ModalContainer
-      visible={isLoading || !!errorMessage}
+      visible={isLoading || !!errorState.errorMessage}
       testID="activity-indicator"
     >
       <Backdrop>
         <Content>
           {isLoading && <Loading size="large" />}
-          {!!errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+          {!!errorState.errorMessage && (
+            <ErrorText>{errorState.errorMessage}</ErrorText>
+          )}
         </Content>
       </Backdrop>
     </ModalContainer>

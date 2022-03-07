@@ -1,8 +1,9 @@
-import { Animated, TextInputProps } from 'react-native';
+import { createElement } from 'react';
+import { Animated, TextInputProps, View } from 'react-native';
 import { TextInput as RNTextInput } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 
-export const TextInput = styled(RNTextInput).attrs<TextInputProps>((props) => ({
+const Input = styled(RNTextInput).attrs<TextInputProps>((props) => ({
   placeholderTextColor: props.theme.colors.placeholder,
   selectionColor: props.theme.colors.primary,
   autoCapitalize: 'none',
@@ -13,7 +14,11 @@ export const TextInput = styled(RNTextInput).attrs<TextInputProps>((props) => ({
   color: #fdfdfd;
 `;
 
-export const Container = styled.View`
+export const TextInput = styled(View).attrs<TextInputProps>(
+  (props: TextInputProps) => ({
+    children: createElement(Input, props),
+  }),
+)<TextInputProps>`
   padding: 20px;
   width: 100%;
   height: 60px;
