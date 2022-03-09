@@ -5,6 +5,10 @@ import { PressableProps, TextInputProps, ViewProps } from 'react-native';
 import Login from './login';
 import theme from '~/presentation/theme';
 
+const renderWithTheme = (component: React.ReactNode) => (
+  <ThemeProvider theme={theme}>{component}</ThemeProvider>
+);
+
 const getSecondChild = <T,>(
   children: React.ReactNode[],
 ): React.ReactElement<T> => {
@@ -12,22 +16,27 @@ const getSecondChild = <T,>(
   return secondChild as React.ReactElement<T>;
 };
 
+const makeComponent = () => {
+  const result = render(renderWithTheme(<Login />));
+
+  return {
+    result,
+  };
+};
+
 describe('Login Screen', () => {
   test('Should start with initial state', () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <Login />
-      </ThemeProvider>,
-    );
-    const activityIndicator = getByTestId('activity-indicator');
-    const loginButton = getByTestId(
+    const { result } = makeComponent();
+
+    const activityIndicator = result.getByTestId('activity-indicator');
+    const loginButton = result.getByTestId(
       'primary-button',
     ) as unknown as React.ReactElement<PressableProps>;
 
-    const emailInputComponent = getByTestId(
+    const emailInputComponent = result.getByTestId(
       'email-input',
     ) as unknown as React.ReactElement<ViewProps>;
-    const passwordInputComponent = getByTestId(
+    const passwordInputComponent = result.getByTestId(
       'password-input',
     ) as unknown as React.ReactElement<ViewProps>;
 
