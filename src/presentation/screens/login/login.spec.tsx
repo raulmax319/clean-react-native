@@ -53,11 +53,12 @@ describe('Login Screen', () => {
 
       // simulates the execution of validation inside the component
       // this is due to a problem when testing props, it returns undefined
-      validationSpy.validate({ email });
+      validationSpy.validate('email', email);
     });
 
     expect(emailInput.props.defaultValue).toBe(email);
-    expect(validationSpy.input).toEqual({ email });
+    expect(validationSpy.field).toBe('email');
+    expect(validationSpy.value).toBe(email);
   });
 
   test('Should call validation with correct email', () => {
@@ -73,9 +74,11 @@ describe('Login Screen', () => {
 
       // simulates the execution of validation inside the component
       // this is due to a problem when testing props, it returns undefined
-      validationSpy.validate({ password });
+      validationSpy.validate('password', password);
     });
+
     expect(passwordInput.props.defaultValue).toBe(password);
-    expect(validationSpy.input).toEqual({ password });
+    expect(validationSpy.field).toEqual('password');
+    expect(validationSpy.value).toEqual(password);
   });
 });

@@ -1,10 +1,12 @@
 import { Validation } from '~/presentation/protocols/validation';
 
 export class ValidationSpy implements Validation {
-  input: unknown;
+  field: string;
+  value: string;
   errorMessage: string;
-  validate(input: unknown): string {
-    this.input = input;
+  validate(field: string, value: string): string {
+    this.field = field;
+    this.value = value;
     return this.errorMessage;
   }
 }
