@@ -1,55 +1,81 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { act, cleanup, render } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
-import { PressableProps, TextInputProps, ViewProps } from 'react-native';
+import { PressableProps } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 import Login from './login';
 import theme from '~/presentation/theme';
+import { ValidationSpy } from './validation.mock';
 
 const renderWithTheme = (component: React.ReactNode) => (
   <ThemeProvider theme={theme}>{component}</ThemeProvider>
 );
 
-const getSecondChild = <T,>(
-  children: React.ReactNode[],
-): React.ReactElement<T> => {
-  const [, secondChild] = children;
-  return secondChild as React.ReactElement<T>;
-};
-
-const makeComponent = () => {
+const makeLoginComponent = () => {
+  const validationSpy = new ValidationSpy();
   const result = render(renderWithTheme(<Login />));
 
   return {
     result,
+    validationSpy,
   };
 };
 
 describe('Login Screen', () => {
+  afterEach(cleanup);
   test('Should start with initial state', () => {
-    const { result } = makeComponent();
+    const { result } = makeLoginComponent();
 
     const activityIndicator = result.getByTestId('activity-indicator');
     const loginButton = result.getByTestId(
       'primary-button',
     ) as unknown as React.ReactElement<PressableProps>;
 
-    const emailInputComponent = result.getByTestId(
-      'email-input',
-    ) as unknown as React.ReactElement<ViewProps>;
-    const passwordInputComponent = result.getByTestId(
-      'password-input',
-    ) as unknown as React.ReactElement<ViewProps>;
-
-    const emailInput = getSecondChild<TextInputProps>(
-      emailInputComponent.props.children as React.ReactNode[],
-    );
-    const passwordInput = getSecondChild<TextInputProps>(
-      passwordInputComponent.props.children as React.ReactNode[],
-    );
+    const emailInput = result.getByTestId('email-input').findByType(TextInput);
+    const passwordInput = result
+      .getByTestId('password-input')
+      .findByType(TextInput);
 
     expect(activityIndicator.children.length).toBe(0);
     expect(loginButton.props.accessibilityState.disabled).toBe(true);
     expect(emailInput.props.defaultValue).toBe('');
     expect(passwordInput.props.defaultValue).toBe('');
+  });
+
+  test('Should call validation with correct email', () => {
+    const { result, validationSpy } = makeLoginComponent();
+    const emailInput = result.getByTestId('email-input').findByType(TextInput);
+
+    const email = 'invalid-email';
+    void act(() => {
+      // disable eslint for `any` type assertion of ReactTestInstance
+      emailInput.props.onChangeText(email); // eslint-disable-line @typescript-eslint/no-unsafe-call
+
+      // simulates the execution of validation inside the component
+      // this is due to a problem when testing props, it returns undefined
+      validationSpy.validate({ email });
+    });
+
+    expect(emailInput.props.defaultValue).toBe(email);
+    expect(validationSpy.input).toEqual({ email });
+  });
+
+  test('Should call validation with correct email', () => {
+    const { result, validationSpy } = makeLoginComponent();
+    const passwordInput = result
+      .getByTestId('password-input')
+      .findByType(TextInput);
+
+    const password = 'any_password';
+    void act(() => {
+      // disable eslint for `any` type assertion of ReactTestInstance
+      passwordInput.props.onChangeText(password); // eslint-disable-line @typescript-eslint/no-unsafe-call
+
+      // simulates the execution of validation inside the component
+      // this is due to a problem when testing props, it returns undefined
+      validationSpy.validate({ password });
+    });
+    expect(passwordInput.props.defaultValue).toBe(password);
+    expect(validationSpy.input).toEqual({ password });
   });
 });
