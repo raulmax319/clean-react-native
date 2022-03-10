@@ -1,4 +1,5 @@
 import React from 'react';
+import { LoginValidation } from '~/presentation/screens/login/login-validation';
 
 export type ErrorState = {
   email: boolean;
@@ -24,11 +25,13 @@ export const LoginContext = React.createContext<LoginState>({} as LoginState);
 export const useLoginContext = () => React.useContext(LoginContext);
 
 export const LoginContextProvider: React.FC = ({ children }) => {
+  const validation = new LoginValidation();
+
   const [loginState] = React.useState({
     isLoading: false,
   });
 
-  const [errorState] = React.useState<ErrorState>({
+  const [errorState, setErrorState] = React.useState<ErrorState>({
     errorMessage: '',
     email: false,
     password: false,
@@ -43,7 +46,13 @@ export const LoginContextProvider: React.FC = ({ children }) => {
     setInputState((prev) => ({ ...prev, ...value }));
 
   const handleSubmit = () => {
-    return;
+    const errorMessage = validation.validate('email', inputState.email);
+
+    setErrorState((prev) => ({
+      ...prev,
+      errorMessage,
+      email: true,
+    }));
   };
 
   return (
