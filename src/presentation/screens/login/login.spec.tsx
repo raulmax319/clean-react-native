@@ -82,4 +82,21 @@ describe('Login Screen', () => {
     expect(validationSpy.field).toEqual('password');
     expect(validationSpy.value).toEqual(password);
   });
+
+  test('Should show email error if Validation fails', () => {
+    const { result, validationSpy } = makeLoginComponent();
+    const emailInput = result.getByTestId('email-input').findByType(TextInput);
+    const primaryButton = result.getByTestId('primary-button');
+
+    const errorMessage = faker.random.words();
+    void act(() => {
+      // disable eslint for `any` type assertion of ReactTestInstance
+      emailInput.props.defaultValue = faker.internet.email(); // eslint-disable-line @typescript-eslint/no-unsafe-call
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      primaryButton.props.onClick((validationSpy.errorMessage = errorMessage));
+    });
+    // console.log(primaryButton.props.onClick);
+    expect(validationSpy.errorMessage).toBe(errorMessage);
+  });
 });
