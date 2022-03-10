@@ -6,7 +6,7 @@ import {
   PrimaryButton,
   TabView,
 } from '~/presentation/components';
-import { LoginContextProvider } from '~/presentation/contexts';
+import { LoginContextProvider, useLoginContext } from '~/presentation/contexts';
 import {
   Container,
   Footer,
@@ -18,36 +18,42 @@ import {
 
 const tabItems = [{ label: 'Login' }, { label: 'Register' }];
 
-const Login: React.FC = () => {
-  const handleLogin = () => {
-    return;
-  };
+const LoginComponent: React.FC = () => {
+  const { inputState, handleSubmit } = useLoginContext();
+
+  React.useEffect(() => {
+    // ...
+  }, [inputState.email]);
 
   return (
     <Container>
-      <LoginContextProvider>
-        <Head>
-          <TabView data={tabItems} />
-        </Head>
-        <Form>
-          <Input label="Email" defaultValue="" />
-          <Input label="Password" defaultValue="" secureTextEntry />
-        </Form>
-        <Footer>
-          <SubButton>Forgot password?</SubButton>
-          <PrimaryButton disabled onPress={handleLogin}>
-            Log in
-          </PrimaryButton>
-          <SignUp>
-            Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
-          </SignUp>
-        </Footer>
-        <Circle top left />
-        <Circle small bottom right />
-        <ActivityIndicator />
-      </LoginContextProvider>
+      <Head>
+        <TabView data={tabItems} />
+      </Head>
+      <Form>
+        <Input label="Email" />
+        <Input label="Password" secureTextEntry />
+      </Form>
+      <Footer>
+        <SubButton>Forgot password?</SubButton>
+        <PrimaryButton disabled onPress={handleSubmit}>
+          Log in
+        </PrimaryButton>
+        <SignUp>
+          Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
+        </SignUp>
+      </Footer>
+      <Circle top left />
+      <Circle small bottom right />
+      <ActivityIndicator />
     </Container>
   );
 };
+
+const Login: React.FC = () => (
+  <LoginContextProvider>
+    <LoginComponent />
+  </LoginContextProvider>
+);
 
 export default Login;
