@@ -5,7 +5,7 @@ import { PressableProps } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import Login from './login';
 import theme from '~/presentation/theme';
-import { ValidationSpy } from './validation.mock';
+import { ValidationSpy } from '../../mocks';
 
 const renderWithTheme = (component: React.ReactNode) => (
   <ThemeProvider theme={theme}>{component}</ThemeProvider>
