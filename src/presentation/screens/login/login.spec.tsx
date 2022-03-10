@@ -3,6 +3,7 @@ import { act, cleanup, render } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
 import { PressableProps } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import { faker } from '@faker-js/faker';
 import Login from './login';
 import theme from '~/presentation/theme';
 import { ValidationSpy } from '../../mocks';
@@ -46,7 +47,7 @@ describe('Login Screen', () => {
     const { result, validationSpy } = makeLoginComponent();
     const emailInput = result.getByTestId('email-input').findByType(TextInput);
 
-    const email = 'invalid-email';
+    const email = faker.internet.email();
     void act(() => {
       // disable eslint for `any` type assertion of ReactTestInstance
       emailInput.props.onChangeText(email); // eslint-disable-line @typescript-eslint/no-unsafe-call
@@ -67,7 +68,7 @@ describe('Login Screen', () => {
       .getByTestId('password-input')
       .findByType(TextInput);
 
-    const password = 'any_password';
+    const password = faker.internet.password();
     void act(() => {
       // disable eslint for `any` type assertion of ReactTestInstance
       passwordInput.props.onChangeText(password); // eslint-disable-line @typescript-eslint/no-unsafe-call
