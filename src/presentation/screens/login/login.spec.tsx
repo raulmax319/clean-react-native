@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+// disable eslint for `any` type assertion of ReactTestInstance
 import React from 'react';
 import { act, cleanup, fireEvent, render } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
@@ -7,7 +10,14 @@ import { faker } from '@faker-js/faker';
 import Login from './login';
 import theme from '~/presentation/theme';
 import { ValidationSpy } from '../../mocks';
-import { Button } from '~/presentation/components';
+import { ActivityIndicator, Button } from '~/presentation/components';
+import { LoginContext, LoginState } from '~/presentation/contexts';
+
+const renderWithContext = (component: React.ReactNode, values: LoginState) => (
+  <LoginContext.Provider value={{ ...values }}>
+    {component}
+  </LoginContext.Provider>
+);
 
 const renderWithTheme = (component: React.ReactNode) => (
   <ThemeProvider theme={theme}>{component}</ThemeProvider>
@@ -61,7 +71,7 @@ describe('Login Screen', () => {
     const email = faker.internet.email();
     void act(() => {
       // disable eslint for `any` type assertion of ReactTestInstance
-      emailInput.props.onChangeText(email); // eslint-disable-line @typescript-eslint/no-unsafe-call
+      emailInput.props.onChangeText(email);
 
       // simulates the execution of validation inside the component
       // this is due to a problem when testing props, it returns undefined
@@ -81,8 +91,7 @@ describe('Login Screen', () => {
 
     const password = faker.internet.password();
     void act(() => {
-      // disable eslint for `any` type assertion of ReactTestInstance
-      passwordInput.props.onChangeText(password); // eslint-disable-line @typescript-eslint/no-unsafe-call
+      passwordInput.props.onChangeText(password);
 
       // simulates the execution of validation inside the component
       // this is due to a problem when testing props, it returns undefined
@@ -142,12 +151,30 @@ describe('Login Screen', () => {
 
     void act(() => {
       // setState
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       primaryButton.props.accessibilityState.disabled =
         mockContextValue.isLoading;
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(primaryButton.props.accessibilityState.disabled).toBe(true);
+  });
+
+  test('Should show loading modal on submit', () => {
+    const mockContextValues = {
+      isLoading: true,
+      errorState: {
+        email: false,
+        password: false,
+        errorMessage: '',
+      },
+    } as LoginState;
+    const { getByTestId } = render(
+      renderWithContext(
+        renderWithTheme(<ActivityIndicator />),
+        mockContextValues,
+      ),
+    );
+
+    const activityIndicator = getByTestId('activity-indicator');
+    expect(activityIndicator.children.length).toBe(1);
   });
 });
