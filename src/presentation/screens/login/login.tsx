@@ -19,11 +19,7 @@ import {
 const tabItems = [{ label: 'Login' }, { label: 'Register' }];
 
 const LoginComponent: React.FC = () => {
-  const { inputState, handleSubmit } = useLoginContext();
-
-  React.useEffect(() => {
-    // ...
-  }, [inputState.email]);
+  const { isLoading, handleSubmit } = useLoginContext();
 
   return (
     <Container>
@@ -36,7 +32,7 @@ const LoginComponent: React.FC = () => {
       </Form>
       <Footer>
         <SubButton>Forgot password?</SubButton>
-        <PrimaryButton disabled onPress={handleSubmit}>
+        <PrimaryButton disabled={isLoading} onPress={handleSubmit}>
           Log in
         </PrimaryButton>
         <SignUp>

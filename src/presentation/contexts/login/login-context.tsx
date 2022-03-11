@@ -51,7 +51,7 @@ export const LoginContextProvider: React.FC = ({ children }) => {
     setErrorState((prev) => ({
       ...prev,
       errorMessage,
-      email: true,
+      email: !!errorMessage,
     }));
   };
 
