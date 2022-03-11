@@ -27,7 +27,7 @@ export const useLoginContext = () => React.useContext(LoginContext);
 export const LoginContextProvider: React.FC = ({ children }) => {
   const validation = new LoginValidation();
 
-  const [loginState] = React.useState({
+  const [loginState, setLoginState] = React.useState({
     isLoading: false,
   });
 
@@ -46,6 +46,7 @@ export const LoginContextProvider: React.FC = ({ children }) => {
     setInputState((prev) => ({ ...prev, ...value }));
 
   const handleSubmit = () => {
+    setLoginState((prev) => ({ ...prev, isLoading: true }));
     const errorMessage = validation.validate('email', inputState.email);
 
     setErrorState((prev) => ({
