@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, cleanup, render } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
 import { PressableProps } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
@@ -7,6 +7,7 @@ import { faker } from '@faker-js/faker';
 import Login from './login';
 import theme from '~/presentation/theme';
 import { ValidationSpy } from '../../mocks';
+import { Button } from '~/presentation/components';
 
 const renderWithTheme = (component: React.ReactNode) => (
   <ThemeProvider theme={theme}>{component}</ThemeProvider>
@@ -15,6 +16,16 @@ const renderWithTheme = (component: React.ReactNode) => (
 const makeLoginComponent = () => {
   const validationSpy = new ValidationSpy();
   const result = render(renderWithTheme(<Login />));
+
+  return {
+    result,
+    validationSpy,
+  };
+};
+
+const makeButtonComponent = (customProps?: PressableProps) => {
+  const validationSpy = new ValidationSpy();
+  const result = render(renderWithTheme(<Button {...customProps} />));
 
   return {
     result,
@@ -38,7 +49,7 @@ describe('Login Screen', () => {
       .findByType(TextInput);
 
     expect(activityIndicator.children.length).toBe(0);
-    expect(loginButton.props.accessibilityState.disabled).toBe(true);
+    expect(loginButton.props.accessibilityState.disabled).toBe(false);
     expect(emailInput.props.defaultValue).toBe('');
     expect(passwordInput.props.defaultValue).toBe('');
   });
@@ -83,20 +94,60 @@ describe('Login Screen', () => {
     expect(validationSpy.value).toEqual(password);
   });
 
-  test('Should show email error if Validation fails', () => {
-    const { result, validationSpy } = makeLoginComponent();
-    const emailInput = result.getByTestId('email-input').findByType(TextInput);
+  test('Should not be able to press the button when disabled', () => {
+    const onPressMockFn = jest.fn();
+    const { result } = makeButtonComponent({
+      onPress: onPressMockFn,
+      disabled: true,
+    });
     const primaryButton = result.getByTestId('primary-button');
 
-    const errorMessage = faker.random.words();
-    void act(() => {
-      // disable eslint for `any` type assertion of ReactTestInstance
-      emailInput.props.defaultValue = faker.internet.email(); // eslint-disable-line @typescript-eslint/no-unsafe-call
+    fireEvent.press(primaryButton);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      primaryButton.props.onClick((validationSpy.errorMessage = errorMessage));
+    expect(onPressMockFn).not.toHaveBeenCalled();
+  });
+
+  test('Should display the error message when Validation fails', () => {
+    const errorMessage = faker.random.words();
+    const validationSpy = new ValidationSpy();
+    const onPressMockFn = jest.fn(() => {
+      validationSpy.errorMessage = errorMessage;
     });
-    // console.log(primaryButton.props.onClick);
+    const { result } = makeButtonComponent({
+      onPress: onPressMockFn,
+      disabled: false,
+    });
+    const primaryButton = result.getByTestId('primary-button');
+
+    fireEvent.press(primaryButton);
+
     expect(validationSpy.errorMessage).toBe(errorMessage);
+  });
+
+  test('Should disable button when isLoading is true', () => {
+    const mockContextValue = {
+      isLoading: false,
+    };
+    const mockedOnPress = jest.fn(() => {
+      mockContextValue.isLoading = true;
+    });
+
+    const { result } = makeButtonComponent({
+      onPress: mockedOnPress,
+      disabled: mockContextValue.isLoading,
+    });
+    const primaryButton = result.getByTestId('primary-button');
+
+    fireEvent.press(primaryButton);
+
+    void act(() => {
+      // setState
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      primaryButton.props.accessibilityState.disabled =
+        mockContextValue.isLoading;
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(primaryButton.props.accessibilityState.disabled).toBe(true);
   });
 });
