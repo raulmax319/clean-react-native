@@ -65,15 +65,19 @@ export const LoginContextProvider: React.FC<Props> = ({
       if (emailError || passwordError) {
         setErrorState((prev) => ({
           ...prev,
-          errorMessage: emailError || passwordError,
           email: !!emailError,
           password: !!passwordError,
         }));
+        throw new Error(emailError || passwordError);
       }
 
-      const response = await authentication.auth(inputState);
+      const _response = await authentication.auth(inputState);
     } catch (err) {
-      // ...
+      setLoginState((prev) => ({ ...prev, isLoading: false }));
+      setErrorState((prev) => ({
+        ...prev,
+        errorMessage: err.message,
+      }));
     }
   };
 
