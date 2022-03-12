@@ -1,16 +1,16 @@
 // disable eslint for `any` type assertion of ReactTestInstance
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
-import { PressableProps } from 'react-native';
+import { ActivityIndicator, PressableProps, Text } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { faker } from '@faker-js/faker';
 import { LoginComponent } from './login';
 import theme from '~/presentation/theme';
 import { AuthenticationSpy, ValidationSpy } from '../../mocks';
 import { LoginContext, LoginState } from '~/presentation/contexts';
+import { UnauthorizedError } from '~/domain/errors';
 
 const renderWithContext = (
   component: React.ReactNode,
@@ -150,17 +150,16 @@ describe('Login Screen', () => {
       isLoading: true,
     });
     const activityIndicator = result.getByTestId('activity-indicator');
+    const spinner = activityIndicator.findByType(ActivityIndicator);
 
     expect(activityIndicator.children.length).toBe(1);
+    expect(spinner).toBeTruthy();
   });
 
   test('Should call Authentication with correct values', async () => {
-    const mockOnChangeText = jest.fn();
     const email = faker.internet.email();
     const password = faker.internet.password();
-    const { result, validationSpy, authenticationSpy } = makeLoginComponent({
-      handleInput: mockOnChangeText,
-    });
+    const { result, validationSpy, authenticationSpy } = makeLoginComponent();
     const primaryButton = result.getByTestId('primary-button');
 
     fireEvent.press(primaryButton, [
@@ -170,5 +169,26 @@ describe('Login Screen', () => {
     ]);
 
     expect(authenticationSpy.params).toEqual({ email, password });
+  });
+
+  test('Should throw an error if Authentication fails', async () => {
+    const error = new UnauthorizedError();
+    const { result, authenticationSpy } = makeLoginComponent({
+      errorState: {
+        errorMessage: error.message,
+        email: false,
+        password: false,
+      },
+    });
+    const primaryButton = result.getByTestId('primary-button');
+
+    fireEvent.press(
+      primaryButton,
+      await authenticationSpy.auth({ email: '', password: '' }),
+    );
+    const activityIndicator = result.getByTestId('activity-indicator');
+    const errorMessage = activityIndicator.findByType(Text);
+
+    expect(errorMessage.props.children).toEqual(error.message);
   });
 });
