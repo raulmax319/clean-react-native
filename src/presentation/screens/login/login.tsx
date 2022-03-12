@@ -1,4 +1,6 @@
 import React from 'react';
+import { AccountModel } from '~/domain/models';
+import { Authentication, AuthenticationParams } from '~/domain/usecases';
 import {
   ActivityIndicator,
   Circle,
@@ -7,6 +9,7 @@ import {
   TabView,
 } from '~/presentation/components';
 import { LoginContextProvider, useLoginContext } from '~/presentation/contexts';
+import { Validation } from '~/presentation/protocols/validation';
 import {
   Container,
   Footer,
@@ -18,7 +21,7 @@ import {
 
 const tabItems = [{ label: 'Login' }, { label: 'Register' }];
 
-const LoginComponent: React.FC = () => {
+export const LoginComponent: React.FC = () => {
   const { isLoading, handleSubmit } = useLoginContext();
 
   return (
@@ -46,8 +49,24 @@ const LoginComponent: React.FC = () => {
   );
 };
 
+class TempValidation implements Validation {
+  validate(field: string, value: string): string {
+    return '';
+  }
+}
+
+class TempAuthentication implements Authentication {
+  accountModel: AccountModel;
+  auth(params: AuthenticationParams): Promise<AccountModel> {
+    return Promise.resolve(this.accountModel);
+  }
+}
+
 const Login: React.FC = () => (
-  <LoginContextProvider>
+  <LoginContextProvider
+    validation={new TempValidation()}
+    authentication={new TempAuthentication()}
+  >
     <LoginComponent />
   </LoginContextProvider>
 );

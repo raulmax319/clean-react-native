@@ -1,5 +1,6 @@
 import React from 'react';
-import { LoginValidation } from '~/presentation/screens/login/login-validation';
+import { Authentication } from '~/domain/usecases';
+import { Validation } from '~/presentation/protocols/validation';
 
 export type ErrorState = {
   email: boolean;
@@ -17,16 +18,23 @@ export type LoginState = {
   inputState: InputState;
   errorState: ErrorState;
   handleInput: (value: Record<string, string>) => void;
-  handleSubmit: () => void;
+  handleSubmit: () => Promise<void>;
+};
+
+type Props = {
+  validation: Validation;
+  authentication: Authentication;
 };
 
 export const LoginContext = React.createContext<LoginState>({} as LoginState);
 
 export const useLoginContext = () => React.useContext(LoginContext);
 
-export const LoginContextProvider: React.FC = ({ children }) => {
-  const validation = new LoginValidation();
-
+export const LoginContextProvider: React.FC<Props> = ({
+  children,
+  validation,
+  authentication,
+}) => {
   const [loginState, setLoginState] = React.useState({
     isLoading: false,
   });
@@ -45,15 +53,28 @@ export const LoginContextProvider: React.FC = ({ children }) => {
   const handleInput = (value: Record<string, string>) =>
     setInputState((prev) => ({ ...prev, ...value }));
 
-  const handleSubmit = () => {
-    setLoginState((prev) => ({ ...prev, isLoading: true }));
-    const errorMessage = validation.validate('email', inputState.email);
+  const handleSubmit = async () => {
+    try {
+      setLoginState((prev) => ({ ...prev, isLoading: true }));
+      const emailError = validation.validate('email', inputState.email);
+      const passwordError = validation.validate(
+        'password',
+        inputState.password,
+      );
 
-    setErrorState((prev) => ({
-      ...prev,
-      errorMessage,
-      email: !!errorMessage,
-    }));
+      if (emailError || passwordError) {
+        setErrorState((prev) => ({
+          ...prev,
+          errorMessage: emailError || passwordError,
+          email: !!emailError,
+          password: !!passwordError,
+        }));
+      }
+
+      const response = await authentication.auth(inputState);
+    } catch (err) {
+      // ...
+    }
   };
 
   return (
