@@ -75,7 +75,6 @@ describe('Login Screen', () => {
       handleInput: mockOnChangeText,
     });
     const emailInput = result.getByTestId('email-input').findByType(TextInput);
-
     const email = faker.internet.email();
 
     fireEvent(emailInput, 'onChangeText', email);
@@ -91,7 +90,6 @@ describe('Login Screen', () => {
     const passwordInput = result
       .getByTestId('password-input')
       .findByType(TextInput);
-
     const password = faker.internet.password();
 
     fireEvent(passwordInput, 'onChangeText', password);
@@ -151,7 +149,6 @@ describe('Login Screen', () => {
     const { result } = makeLoginComponent({
       isLoading: true,
     });
-
     const activityIndicator = result.getByTestId('activity-indicator');
 
     expect(activityIndicator.children.length).toBe(1);
@@ -165,13 +162,6 @@ describe('Login Screen', () => {
       handleInput: mockOnChangeText,
     });
     const primaryButton = result.getByTestId('primary-button');
-    const emailInput = result.getByTestId('email-input').findByType(TextInput);
-    const passwordInput = result
-      .getByTestId('password-input')
-      .findByType(TextInput);
-
-    fireEvent(emailInput, 'onChangeText', email);
-    fireEvent(passwordInput, 'onChangeText', password);
 
     fireEvent.press(primaryButton, [
       validationSpy.validate('email', email),
