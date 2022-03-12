@@ -26,6 +26,12 @@
   },
   "plugins": ["react", "react-native", "@typescript-eslint", "prettier"],
   "rules": {
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
     "prettier/prettier": "error",
     "no-console": ["error", { "allow": ["tron"] }],
     "import/extensions": "off",
