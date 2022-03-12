@@ -9,21 +9,8 @@ import { TextInput } from 'react-native-gesture-handler';
 import { faker } from '@faker-js/faker';
 import { LoginComponent } from './login';
 import theme from '~/presentation/theme';
-import { ValidationSpy } from '../../mocks';
+import { AuthenticationSpy, ValidationSpy } from '../../mocks';
 import { LoginContext, LoginState } from '~/presentation/contexts';
-import { Authentication, AuthenticationParams } from '~/domain/usecases';
-import { AccountModel } from '~/domain/models';
-import { mockAccountModel } from '~/domain/mocks';
-
-class AuthenticationSpy implements Authentication {
-  params: AuthenticationParams;
-  accountModel = mockAccountModel();
-
-  async auth(params: AuthenticationParams): Promise<AccountModel> {
-    this.params = params;
-    return Promise.resolve(this.accountModel);
-  }
-}
 
 const renderWithContext = (
   component: React.ReactNode,
