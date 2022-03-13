@@ -8,16 +8,10 @@ export type InputProps = {
 } & TextInputProps;
 
 const Input: React.FC<InputProps> = ({ label, ...otherProps }) => {
-  const { inputState, handleInput } = useLoginContext();
-
   return (
     <View testID={`${label.toLowerCase()}-input`}>
       <Label>{label}</Label>
-      <TextInput
-        defaultValue={inputState[label.toLowerCase() as keyof InputState]}
-        onChangeText={(text) => handleInput({ [label.toLowerCase()]: text })}
-        {...otherProps}
-      />
+      <TextInput {...otherProps} />
     </View>
   );
 };
