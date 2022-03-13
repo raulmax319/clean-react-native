@@ -1,50 +1,41 @@
 // disable eslint for `any` type assertion of ReactTestInstance
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
-import { cleanup, fireEvent, render } from '@testing-library/react-native';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+} from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
 import { ActivityIndicator, PressableProps, Text } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { faker } from '@faker-js/faker';
-import { LoginComponent } from './login';
-import theme from '~/presentation/theme';
 import { AuthenticationSpy, ValidationSpy } from '../../mocks';
-import { LoginContext, LoginState } from '~/presentation/contexts';
+import { HttpPostClientSpy } from '~/data/mocks';
 import { UnauthorizedError } from '~/domain/errors';
+import theme from '~/presentation/theme';
+import Login from './login';
 
-const renderWithContext = (
-  component: React.ReactNode,
-  customValues?: Partial<LoginState>,
-) => {
-  const contextValueSpy = {
-    isLoading: false,
-    inputState: { email: '', password: '' },
-    errorState: { errorMessage: '', email: false, password: false },
-  };
-
-  return (
-    <LoginContext.Provider
-      value={{
-        ...contextValueSpy,
-        handleSubmit: jest.fn(),
-        handleInput: jest.fn(),
-        ...customValues,
-      }}
-    >
-      <ThemeProvider theme={theme}>{component}</ThemeProvider>
-    </LoginContext.Provider>
-  );
+const withTheme = (component: React.ReactNode) => {
+  return <ThemeProvider theme={theme}>{component}</ThemeProvider>;
 };
 
-const makeLoginComponent = (customValues?: Partial<LoginState>) => {
+const makeLoginComponent = () => {
   const authenticationSpy = new AuthenticationSpy();
   const validationSpy = new ValidationSpy();
-  const result = render(renderWithContext(<LoginComponent />, customValues));
+  const httpPostClient = new HttpPostClientSpy();
+  const result = render(
+    withTheme(
+      <Login validation={validationSpy} httpPostClient={httpPostClient} />,
+    ),
+  );
 
   return {
     result,
     validationSpy,
     authenticationSpy,
+    httpPostClient,
   };
 };
 
@@ -69,91 +60,65 @@ describe('Login Screen', () => {
     expect(passwordInput.props.defaultValue).toBe('');
   });
 
-  test('Should call onChangeText with correct email', () => {
-    const mockOnChangeText = jest.fn();
-    const { result } = makeLoginComponent({
-      handleInput: mockOnChangeText,
-    });
+  test('Should call onChangeText with correct email and password', () => {
+    const { result } = makeLoginComponent();
     const emailInput = result.getByTestId('email-input').findByType(TextInput);
-    const email = faker.internet.email();
-
-    fireEvent(emailInput, 'onChangeText', email);
-
-    expect(mockOnChangeText).toHaveBeenCalledWith({ email });
-  });
-
-  test('Should call onChangeText with correct password', () => {
-    const mockOnChangeText = jest.fn();
-    const { result } = makeLoginComponent({
-      handleInput: mockOnChangeText,
-    });
     const passwordInput = result
       .getByTestId('password-input')
       .findByType(TextInput);
     const password = faker.internet.password();
-
-    fireEvent(passwordInput, 'onChangeText', password);
-
-    expect(mockOnChangeText).toHaveBeenCalledWith({ password });
-  });
-
-  test('Should call validation with correct email', () => {
-    const mockOnPress = jest.fn();
-    const { result, validationSpy } = makeLoginComponent({
-      handleSubmit: mockOnPress,
-    });
-    const primaryButton = result.getByTestId('primary-button');
     const email = faker.internet.email();
 
-    fireEvent.press(primaryButton, validationSpy.validate('email', email));
+    fireEvent.changeText(emailInput, email);
+    fireEvent.changeText(passwordInput, password);
 
-    expect(mockOnPress).toHaveBeenCalled();
-    expect(validationSpy.field).toBe('email');
-    expect(validationSpy.value).toBe(email);
+    expect(emailInput.props.defaultValue).toBe(email);
+    expect(passwordInput.props.defaultValue).toBe(password);
   });
 
-  test('Should call validation with correct password', () => {
-    const mockOnPress = jest.fn();
-    const { result, validationSpy } = makeLoginComponent({
-      handleSubmit: mockOnPress,
-    });
+  test('Should call validation with correct values', async () => {
+    const { result, validationSpy } = makeLoginComponent();
     const primaryButton = result.getByTestId('primary-button');
-    const password = faker.internet.password();
+    const emailInput = result.getByTestId('email-input').findByType(TextInput);
+    const email = faker.internet.email();
 
-    fireEvent.press(
-      primaryButton,
-      validationSpy.validate('password', password),
-    );
+    fireEvent.changeText(emailInput, email);
+    void waitFor(async () => {
+      await fireEvent.press(primaryButton);
+    });
 
-    expect(mockOnPress).toHaveBeenCalled();
-    expect(validationSpy.field).toEqual('password');
-    expect(validationSpy.value).toEqual(password);
+    await expect(validationSpy.errorMessage).toBeFalsy(); // eslint-disable-line
   });
 
-  test('Should not be able to press the button when disabled', () => {
-    const mockOnPress = jest.fn();
-    const mockContextValue = {
-      isLoading: true,
-      handleSubmit: mockOnPress,
-    };
-    const { result } = makeLoginComponent(mockContextValue);
+  test('Should not be able to press the button when disabled', async () => {
+    const { result } = makeLoginComponent();
     const primaryButton = result.getByTestId('primary-button');
 
-    fireEvent.press(primaryButton);
+    void waitFor(async () => {
+      await fireEvent.press(primaryButton);
+    });
 
-    expect(primaryButton.props.accessibilityState.disabled).toBe(true);
-    expect(mockOnPress).not.toHaveBeenCalled();
+    /* 
+    This needs to be awaited due to a problem with how fireEvent works.
+    It assumes that everything is done after the event is fired
+    and the component is unmounted before some states updates are done
+    so it'll console.error about memory leak issue with React 
+    */
+    await expect(primaryButton.props.accessibilityState.disabled).toBe(true); // eslint-disable-line
   });
 
-  test('Should show ActivityIndicator when isLoading is true', () => {
-    const { result } = makeLoginComponent({
-      isLoading: true,
-    });
+  test('Should show ActivityIndicator when isLoading is true', async () => {
+    const { result } = makeLoginComponent();
+    const primaryButton = result.getByTestId('primary-button');
     const activityIndicator = result.getByTestId('activity-indicator');
+
+    void waitFor(async () => {
+      await fireEvent.press(primaryButton);
+    });
     const spinner = activityIndicator.findByType(ActivityIndicator);
 
-    expect(activityIndicator.children.length).toBe(1);
-    expect(spinner).toBeTruthy();
+    await expect(activityIndicator.children.length).toBe(1); // eslint-disable-line
+    await expect(spinner).toBeTruthy(); // eslint-disable-line
   });
 
   test('Should call Authentication with correct values', async () => {
@@ -162,33 +127,31 @@ describe('Login Screen', () => {
     const { result, validationSpy, authenticationSpy } = makeLoginComponent();
     const primaryButton = result.getByTestId('primary-button');
 
-    fireEvent.press(primaryButton, [
-      validationSpy.validate('email', email),
-      validationSpy.validate('password', password),
-      await authenticationSpy.auth({ email, password }),
-    ]);
+    void waitFor(async () => {
+      await fireEvent.press(primaryButton, [
+        validationSpy.validate('email', email),
+        validationSpy.validate('password', password),
+        authenticationSpy.auth({ email, password }),
+      ]);
+    });
 
-    expect(authenticationSpy.params).toEqual({ email, password });
+    await expect(authenticationSpy.params).toEqual({ email, password }); // eslint-disable-line
   });
 
   test('Should throw an error if Authentication fails', async () => {
     const error = new UnauthorizedError();
-    const { result, authenticationSpy } = makeLoginComponent({
-      errorState: {
-        errorMessage: error.message,
-        email: false,
-        password: false,
-      },
-    });
+    const { result, validationSpy } = makeLoginComponent();
     const primaryButton = result.getByTestId('primary-button');
 
-    fireEvent.press(
-      primaryButton,
-      await authenticationSpy.auth({ email: '', password: '' }),
-    );
+    validationSpy.errorMessage = error.message;
+
+    void waitFor(async () => {
+      await fireEvent.press(primaryButton);
+    });
+
     const activityIndicator = result.getByTestId('activity-indicator');
     const errorMessage = activityIndicator.findByType(Text);
 
-    expect(errorMessage.props.children).toEqual(error.message);
+    await expect(errorMessage.props.children).toEqual(error.message); // eslint-disable-line
   });
 });
