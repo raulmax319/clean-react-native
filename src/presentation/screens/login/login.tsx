@@ -1,6 +1,5 @@
 import React from 'react';
-import { AccountModel } from '~/domain/models';
-import { Authentication, AuthenticationParams } from '~/domain/usecases';
+import { HttpPostClient } from '~/data/protocols/http';
 import {
   ActivityIndicator,
   Circle,
@@ -8,7 +7,8 @@ import {
   PrimaryButton,
   TabView,
 } from '~/presentation/components';
-import { LoginContextProvider, useLoginContext } from '~/presentation/contexts';
+import { ErrorState, InputState, LoginContext } from '~/presentation/contexts';
+import { useAuthentication } from '~/presentation/hooks';
 import { Validation } from '~/presentation/protocols/validation';
 import {
   Container,
@@ -21,54 +21,82 @@ import {
 
 const tabItems = [{ label: 'Login' }, { label: 'Register' }];
 
-export const LoginComponent: React.FC = () => {
-  const { isLoading, handleSubmit } = useLoginContext();
+type Props = {
+  validation: Validation;
+  httpPostClient: HttpPostClient;
+};
+
+export const Login: React.FC<Props> = ({ validation, httpPostClient }) => {
+  const [isLoading, authenticate] = useAuthentication(httpPostClient);
+  const [inputState, setInputState] = React.useState<InputState>({
+    email: '',
+    password: '',
+  });
+  const [errorState, setErrorState] = React.useState<ErrorState>({
+    email: false,
+    password: false,
+    errorMessage: '',
+  });
+
+  const handleInput = (value: Record<string, string>) =>
+    setInputState((prev) => ({ ...prev, ...value }));
+
+  const handleSubmit = async () => {
+    try {
+      const emailError = validation.validate('email', inputState.email);
+      if (!!emailError) throw new Error(emailError);
+
+      const passwordError = validation.validate(
+        'password',
+        inputState.password,
+      );
+      if (!!passwordError) throw new Error(passwordError);
+
+      const _accountModel = await authenticate(inputState);
+    } catch (error) {
+      setErrorState((prev) => ({ ...prev, errorMessage: error.message }));
+    }
+  };
 
   return (
     <Container>
       <Head>
         <TabView data={tabItems} />
       </Head>
-      <Form>
-        <Input label="Email" />
-        <Input label="Password" secureTextEntry />
-      </Form>
-      <Footer>
-        <SubButton>Forgot password?</SubButton>
-        <PrimaryButton disabled={isLoading} onPress={handleSubmit}>
-          Log in
-        </PrimaryButton>
-        <SignUp>
-          Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
-        </SignUp>
-      </Footer>
-      <Circle top left />
-      <Circle small bottom right />
-      <ActivityIndicator />
+      <LoginContext.Provider
+        value={{
+          isLoading,
+          errorState,
+        }}
+      >
+        <Form>
+          <Input
+            label="Email"
+            defaultValue={inputState.email}
+            onChangeText={(email) => handleInput({ email })}
+          />
+          <Input
+            secureTextEntry
+            label="Password"
+            defaultValue={inputState.password}
+            onChangeText={(password) => handleInput({ password })}
+          />
+        </Form>
+        <Footer>
+          <SubButton>Forgot password?</SubButton>
+          <PrimaryButton disabled={isLoading} onPress={handleSubmit}>
+            Log in
+          </PrimaryButton>
+          <SignUp>
+            Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
+          </SignUp>
+        </Footer>
+        <Circle top left />
+        <Circle small bottom right />
+        <ActivityIndicator />
+      </LoginContext.Provider>
     </Container>
   );
 };
-
-class TempValidation implements Validation {
-  validate(field: string, value: string): string {
-    return '';
-  }
-}
-
-class TempAuthentication implements Authentication {
-  accountModel: AccountModel;
-  auth(params: AuthenticationParams): Promise<AccountModel> {
-    return Promise.resolve(this.accountModel);
-  }
-}
-
-const Login: React.FC = () => (
-  <LoginContextProvider
-    validation={new TempValidation()}
-    authentication={new TempAuthentication()}
-  >
-    <LoginComponent />
-  </LoginContextProvider>
-);
 
 export default Login;
