@@ -5,17 +5,18 @@ import {
   HttpStatusCode,
 } from '../protocols/http';
 
-export class HttpPostClientSpy<T, R> implements HttpPostClient<T, R> {
+export class HttpPostClientSpy<B, R> implements HttpPostClient {
   url?: string;
-  body?: T;
+  body?: B;
   response: HttpResponse<R> = {
     status: HttpStatusCode.ok,
   };
 
-  async post(params: HttpPostParams<T>): Promise<HttpResponse<R>> {
-    const { url } = params;
-    this.url = url;
-    this.body = params.body;
-    return Promise.resolve(this.response);
+  async post<_B = B, _R = R>(
+    params: HttpPostParams<_B>,
+  ): Promise<HttpResponse<_R>> {
+    this.url = params.url;
+    this.body = params.body as unknown as B;
+    return Promise.resolve(this.response as unknown as HttpResponse<_R>);
   }
 }

@@ -6,14 +6,14 @@ import { Authentication, AuthenticationParams } from '~/domain/usecases';
 export class RemoteAuthentication implements Authentication {
   constructor(
     private readonly url: string,
-    private readonly httpPostClient: HttpPostClient<
-      AuthenticationParams,
-      AccountModel
-    >,
+    private readonly httpPostClient: HttpPostClient,
   ) {}
 
   async auth(params: AuthenticationParams): Promise<AccountModel> {
-    const response = await this.httpPostClient.post({
+    const response = await this.httpPostClient.post<
+      AuthenticationParams,
+      AccountModel
+    >({
       url: this.url,
       body: params,
     });
