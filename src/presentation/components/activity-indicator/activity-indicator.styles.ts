@@ -7,6 +7,7 @@ export const ModalContainer = styled.Modal.attrs({
 })``;
 
 export const Content = styled.View`
+  max-width: 90%;
   justify-content: center;
   align-items: center;
   padding: 50px;
@@ -22,7 +23,8 @@ export const Backdrop = styled.View`
 `;
 
 export const ErrorText = styled.Text`
+  color: #000;
   font-size: 18px;
   font-weight: bold;
-  color: #000;
+  text-align: center;
 `;
