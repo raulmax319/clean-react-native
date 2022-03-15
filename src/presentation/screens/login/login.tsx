@@ -1,5 +1,5 @@
 import React from 'react';
-import { HttpPostClient } from '~/data/protocols/http';
+import { Authentication } from '~/domain/usecases';
 import {
   ActivityIndicator,
   Circle,
@@ -23,11 +23,11 @@ const tabItems = [{ label: 'Login' }, { label: 'Register' }];
 
 type Props = {
   validation: Validation;
-  httpPostClient: HttpPostClient;
+  authentication: Authentication;
 };
 
-export const Login: React.FC<Props> = ({ validation, httpPostClient }) => {
-  const [isLoading, authenticate] = useAuthentication(httpPostClient);
+export const Login: React.FC<Props> = ({ validation, authentication }) => {
+  const [isLoading, authenticate] = useAuthentication(authentication);
   const [inputState, setInputState] = React.useState<InputState>({
     email: '',
     password: '',
@@ -44,15 +44,15 @@ export const Login: React.FC<Props> = ({ validation, httpPostClient }) => {
   const handleSubmit = async () => {
     try {
       const emailError = validation.validate('email', inputState.email);
-      if (!!emailError) throw new Error(emailError);
-
       const passwordError = validation.validate(
         'password',
         inputState.password,
       );
+
+      if (!!emailError) throw new Error(emailError);
       if (!!passwordError) throw new Error(passwordError);
 
-      const _accountModel = await authenticate(inputState);
+      await authenticate(inputState);
     } catch (error) {
       setErrorState((prev) => ({ ...prev, errorMessage: error.message }));
     }
