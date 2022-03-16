@@ -1,5 +1,3 @@
-// disable eslint for `any` type assertion of ReactTestInstance
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
