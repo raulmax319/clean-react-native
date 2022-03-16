@@ -7,7 +7,6 @@ import {
   PrimaryButton,
   TabView,
 } from '~/presentation/components';
-import { ErrorState, InputState, LoginContext } from '~/presentation/contexts';
 import { useAuthentication } from '~/presentation/hooks';
 import { Validation } from '~/presentation/protocols/validation';
 import {
@@ -20,6 +19,17 @@ import {
 } from './login.styles';
 
 const tabItems = [{ label: 'Login' }, { label: 'Register' }];
+
+export type ErrorState = {
+  email: boolean;
+  password: boolean;
+  errorMessage: string;
+};
+
+export type InputState = {
+  email: string;
+  password: string;
+};
 
 type Props = {
   validation: Validation;
@@ -35,7 +45,7 @@ export const Login: React.FC<Props> = ({ validation, authentication }) => {
   const [errorState, setErrorState] = React.useState<ErrorState>({
     email: false,
     password: false,
-    errorMessage: '',
+    errorMessage: null,
   });
 
   const handleInput = (value: Record<string, string>) =>
@@ -63,38 +73,34 @@ export const Login: React.FC<Props> = ({ validation, authentication }) => {
       <Head>
         <TabView data={tabItems} />
       </Head>
-      <LoginContext.Provider
-        value={{
-          isLoading,
-          errorState,
-        }}
-      >
-        <Form>
-          <Input
-            label="Email"
-            defaultValue={inputState.email}
-            onChangeText={(email) => handleInput({ email })}
-          />
-          <Input
-            secureTextEntry
-            label="Password"
-            defaultValue={inputState.password}
-            onChangeText={(password) => handleInput({ password })}
-          />
-        </Form>
-        <Footer>
-          <SubButton>Forgot password?</SubButton>
-          <PrimaryButton disabled={isLoading} onPress={handleSubmit}>
-            Log in
-          </PrimaryButton>
-          <SignUp>
-            Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
-          </SignUp>
-        </Footer>
-        <Circle top left />
-        <Circle small bottom right />
-        <ActivityIndicator />
-      </LoginContext.Provider>
+      <Form>
+        <Input
+          label="Email"
+          defaultValue={inputState.email}
+          onChangeText={(email) => handleInput({ email })}
+        />
+        <Input
+          secureTextEntry
+          label="Password"
+          defaultValue={inputState.password}
+          onChangeText={(password) => handleInput({ password })}
+        />
+      </Form>
+      <Footer>
+        <SubButton>Forgot password?</SubButton>
+        <PrimaryButton disabled={isLoading} onPress={handleSubmit}>
+          Log in
+        </PrimaryButton>
+        <SignUp>
+          Don&apos;t have an account? <SignUp strong>Sign up</SignUp>
+        </SignUp>
+      </Footer>
+      <Circle top left />
+      <Circle small bottom right />
+      <ActivityIndicator
+        isLoading={isLoading}
+        error={errorState.errorMessage}
+      />
     </Container>
   );
 };

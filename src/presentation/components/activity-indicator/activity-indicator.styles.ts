@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { Modal, ModalProps, StyleSheet } from 'react-native';
 import styled from 'styled-components/native';
 
-export const ModalContainer = styled.Modal.attrs({
+export const ModalContainer = styled(Modal).attrs<ModalProps>({
   transparent: true,
   animationType: 'slide',
 })``;
