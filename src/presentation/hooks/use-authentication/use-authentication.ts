@@ -2,11 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { Authentication, AuthenticationParams } from '~/domain/usecases';
 
-type Request = (
+export type AuthenticationHook = (
   authentication: Authentication,
 ) => [boolean, (params: AuthenticationParams) => Promise<void>];
 
-export const useAuthentication: Request = (authentication) => {
+export const useAuthentication: AuthenticationHook = (authentication) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const makePostRequest = async (params: AuthenticationParams) => {
