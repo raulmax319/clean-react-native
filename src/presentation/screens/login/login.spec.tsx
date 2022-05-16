@@ -1,5 +1,6 @@
 import React from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react-native';
+import '~/presentation/mocks/use-authentication.mock';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider } from 'styled-components/native';
 import { ActivityIndicator, PressableProps, Text } from 'react-native';
@@ -10,10 +11,6 @@ import { UnauthorizedError } from '~/domain/errors';
 import theme from '~/presentation/theme';
 import Login from './login';
 import * as hooks from '../../hooks';
-
-jest.mock('../../hooks', () => ({
-  useAuthentication: jest.fn(() => [false, jest.fn()]),
-}));
 
 const withTheme = (component: React.ReactNode) => {
   return <ThemeProvider theme={theme}>{component}</ThemeProvider>;
