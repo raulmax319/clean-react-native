@@ -13,4 +13,12 @@ describe('MinLengthValidation', () => {
 
     expect(result).toEqual(new InvalidFieldError(field));
   });
+
+  test('Should not return error if value length is valid', () => {
+    const field = faker.database.column();
+    const sut = makeSut(field, 5);
+    const result = sut.validate('12345');
+
+    expect(result).toBeFalsy();
+  });
 });
