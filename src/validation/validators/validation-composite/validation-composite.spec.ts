@@ -1,10 +1,11 @@
+import faker from '@faker-js/faker';
 import { FieldValidationSpy } from '../mocks/field-validation.mock';
 import { ValidationComposite } from './validation-composite';
 
-const makeSut = () => {
+const makeSut = (field: string) => {
   const validators = [
-    new FieldValidationSpy('any_field'),
-    new FieldValidationSpy('any_field'),
+    new FieldValidationSpy(field),
+    new FieldValidationSpy(field),
   ];
   const sut = new ValidationComposite(validators);
 
@@ -13,11 +14,21 @@ const makeSut = () => {
 
 describe('ValidationComposite', () => {
   test('should return an error if any validation fails', () => {
-    const { sut, validators } = makeSut();
-    validators[0].error = new Error('first_error');
-    validators[1].error = new Error('second_error');
-    const error = sut.validate('any_field', 'any_value');
+    const fieldName = faker.random.word();
+    const { sut, validators } = makeSut(fieldName);
+    const firstError = faker.random.words();
+    validators[0].error = new Error(firstError);
+    validators[1].error = new Error(faker.random.words());
+    const error = sut.validate(fieldName, faker.random.word());
 
-    expect(error).toBe(validators[0].error.message);
+    expect(error).toBe(firstError);
+  });
+
+  test('should not return an error if no validation fails', () => {
+    const fieldName = faker.random.word();
+    const { sut } = makeSut(fieldName);
+    const error = sut.validate(fieldName, 'any_value');
+
+    expect(error).toBeFalsy();
   });
 });
