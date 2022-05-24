@@ -15,7 +15,7 @@ export const useAuthentication: AuthenticationHook = (authentication) => {
       const response = await authentication.auth(params);
       void AsyncStorage.setItem('accessToken', response.accessToken);
     } catch (error) {
-      void Promise.reject(error);
+      throw error; // Error instance
     } finally {
       setLoading(false);
     }

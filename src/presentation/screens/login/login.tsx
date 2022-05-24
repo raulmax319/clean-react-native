@@ -100,6 +100,7 @@ export const Login: React.FC<Props> = ({ validation, authentication }) => {
       <ActivityIndicator
         isLoading={isLoading}
         error={errorState.errorMessage}
+        toggle={() => setErrorState({ ...errorState, errorMessage: null })}
       />
     </Container>
   );

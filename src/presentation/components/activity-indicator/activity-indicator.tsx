@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator as Loading, ModalProps } from 'react-native';
+import { ActivityIndicator as Loading, Button, ModalProps } from 'react-native';
 import {
   Content,
   ModalContainer,
@@ -10,6 +10,7 @@ import {
 type Props = ModalProps & {
   isLoading: boolean;
   error?: string;
+  toggle?: () => void;
 };
 
 const ActivityIndicator: React.FC<Props> = ({ isLoading, error, ...rest }) => {
@@ -23,6 +24,7 @@ const ActivityIndicator: React.FC<Props> = ({ isLoading, error, ...rest }) => {
         <Content>
           {isLoading && <Loading size="large" />}
           {!!error && <ErrorText>{error}</ErrorText>}
+          <Button title="Close" onPress={rest.toggle} />
         </Content>
       </Backdrop>
     </ModalContainer>
