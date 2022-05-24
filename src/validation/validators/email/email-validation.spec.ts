@@ -20,4 +20,11 @@ describe('EmailValidation', () => {
 
     expect(result).toBeFalsy();
   });
+
+  test('Should return not return anything if email is empty', () => {
+    const sut = makeSut();
+    const result = sut.validate('');
+
+    expect(result).toBeFalsy();
+  });
 });
