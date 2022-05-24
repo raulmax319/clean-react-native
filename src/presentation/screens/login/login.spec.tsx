@@ -142,7 +142,7 @@ describe('Login Screen', () => {
     fireEvent.press(primaryButton);
 
     const activityIndicator = result.getByTestId('activity-indicator');
-    const errorMessage = activityIndicator.findByType(Text);
+    const errorMessage = activityIndicator.findAllByType(Text)[0];
 
     expect(errorMessage.props.children).toEqual(error.message);
   });
