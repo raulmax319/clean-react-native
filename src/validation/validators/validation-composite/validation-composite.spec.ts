@@ -1,5 +1,5 @@
 import faker from '@faker-js/faker';
-import { FieldValidationSpy } from '../mocks/field-validation.mock';
+import { FieldValidationSpy } from '~/validation/mocks';
 import { ValidationComposite } from './validation-composite';
 
 const makeSut = (field: string) => {
