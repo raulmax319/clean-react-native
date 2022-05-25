@@ -10,12 +10,14 @@ export const makeRandomObject = (): Record<string, unknown> => {
   return obj;
 };
 
+export const mockHttpResponse = () => ({
+  data: makeRandomObject(),
+  status: faker.datatype.number(),
+});
+
 export const mockAxios = (): jest.Mocked<typeof axios> => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
-  mockedAxios.post.mockResolvedValue({
-    data: makeRandomObject(),
-    status: faker.datatype.number(),
-  });
+  mockedAxios.post.mockResolvedValue(mockHttpResponse());
 
   return mockedAxios;
 };
