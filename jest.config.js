@@ -1,7 +1,14 @@
 module.exports = {
   preset: 'react-native',
   roots: ['<rootDir>/src'],
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}', '!**/*.d.ts'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{ts,tsx}',
+    '!<rootDir>/src/**/*.styles.ts',
+    '!**/*.d.ts',
+    '!<rootDir>/src/main/**/*',
+    '!<rootDir>/src/domain/usecases/index.ts',
+    '!<rootDir>/src/domain/models/index.ts',
+  ],
   coverageDirectory: 'coverage',
   transform: {
     '^.+\\.(ts)$': 'ts-jest',

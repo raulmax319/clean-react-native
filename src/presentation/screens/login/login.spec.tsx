@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 import { AuthenticationSpy, ValidationSpy } from '../../mocks';
 import { UnauthorizedError } from '~/domain/errors';
 import theme from '~/presentation/theme';
-import Login from './login';
+import Login from '~/presentation/screens/login';
 import * as hooks from '../../hooks';
 
 const withTheme = (component: React.ReactNode) => {

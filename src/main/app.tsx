@@ -6,7 +6,8 @@ import {
 } from 'react-native-safe-area-context';
 import { Provider as StoreProvider } from 'react-redux';
 import { ThemeProvider } from 'styled-components/native';
-import { RootNavigator } from '~/presentation/router';
+
+import { RootNavigator } from '~/main/router';
 import theme from '~/presentation/theme';
 import { rootStore } from './store/store';
 

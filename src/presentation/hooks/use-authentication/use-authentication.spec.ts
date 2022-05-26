@@ -1,6 +1,9 @@
 import '../../mocks/use-authentication.mock';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { AuthenticationSpy } from '~/presentation/mocks';
+import {
+  AuthenticationSpy,
+  AuthenticationSpyRejection,
+} from '~/presentation/mocks';
 import { AuthenticationHook, useAuthentication } from './use-authentication';
 import { Authentication } from '~/domain/usecases';
 
@@ -13,7 +16,6 @@ describe('Authentication Hook', () => {
       .mockImplementationOnce(() => [
         false,
         jest.fn(() => {
-          // void AsyncStorage.setItem('accessToken', accessToken);
           return Promise.resolve();
         }),
       ]);
@@ -33,5 +35,33 @@ describe('Authentication Hook', () => {
     });
 
     expect(state).toBe(false);
+  });
+
+  test('Should execute makeRequest with error', async () => {
+    const auth = new AuthenticationSpyRejection();
+
+    jest
+      .spyOn({ useAuthentication }, 'useAuthentication')
+      .mockImplementationOnce(() => [false, jest.fn()]);
+
+    const { result } = renderHook<
+      Authentication,
+      ReturnType<AuthenticationHook>
+    >(() => useAuthentication(auth));
+
+    const [, makeRequest] = result.current;
+
+    const params = {
+      email: 'mock@test.com',
+      password: '123456',
+    };
+
+    await act(async () => {
+      try {
+        await makeRequest(params);
+      } catch (err) {
+        expect(err.message).toBe(auth.error);
+      }
+    });
   });
 });
