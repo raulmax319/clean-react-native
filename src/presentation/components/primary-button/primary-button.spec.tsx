@@ -10,7 +10,7 @@ const makeComponent = (component: React.ReactNode) => {
 };
 
 describe('PrimaryButton', () => {
-  test('should highlight button when pressed', () => {
+  test('should highlight the button when pressed', () => {
     const { getByTestId } = render(makeComponent(<PrimaryButton />));
     const button = getByTestId('primary-button');
 
@@ -22,6 +22,7 @@ describe('PrimaryButton', () => {
     act(() => {
       fireEvent.press(button, (button.props.style[0] = highlightProps));
     });
+
     expect(button.props.style[0]).toEqual(highlightProps);
   });
 });

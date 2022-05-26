@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render } from '@testing-library/react-native';
 import '~/presentation/mocks/use-authentication.mock';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider } from 'styled-components/native';
-import { ActivityIndicator, PressableProps, Text } from 'react-native';
+import { ActivityIndicator, Button, PressableProps, Text } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { faker } from '@faker-js/faker';
 import { AuthenticationSpy, ValidationSpy } from '../../mocks';
@@ -165,5 +165,28 @@ describe('Login Screen', () => {
       'accessToken',
       accessToken,
     );
+  });
+
+  test('Should toggle ActivityIndicator pressing the toggle button', () => {
+    jest.spyOn(hooks, 'useAuthentication').mockImplementationOnce(() => [
+      false,
+      jest.fn(() => {
+        return Promise.reject();
+      }),
+    ]);
+
+    const { result, validationSpy } = makeLoginComponent();
+    const primaryButton = result.getByTestId('primary-button');
+    const activityIndicator = result.getByTestId('activity-indicator');
+
+    validationSpy.errorMessage = 'error.message';
+    fireEvent.press(primaryButton);
+
+    expect(activityIndicator.children.length).toBeGreaterThan(0);
+
+    const button = activityIndicator.findByType(Button);
+    fireEvent.press(button);
+
+    expect(activityIndicator.children.length).toBe(0);
   });
 });
