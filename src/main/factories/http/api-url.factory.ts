@@ -1,2 +1,2 @@
-export const makeApiUrl = (path: string): string =>
-  `http://fordevs.herokuapp.com/api${path}`;
+import { API_URL } from 'react-native-dotenv';
+export const makeApiUrl = (path: string): string => `${API_URL}${path}`;
