@@ -1,6 +1,6 @@
+import '~/presentation/mocks/use-authentication.mock';
 import React from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react-native';
-import '~/presentation/mocks/use-authentication.mock';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider } from 'styled-components/native';
 import { ActivityIndicator, Button, PressableProps, Text } from 'react-native';
