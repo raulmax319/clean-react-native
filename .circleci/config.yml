@@ -44,7 +44,6 @@ jobs:
 
   unit-tests:
     executor: default
-    parallelism: 6
     steps:
       - attach_project
       - run:
