@@ -40,7 +40,7 @@ jobs:
       - run:
           name: Lint files
           command: |
-            eslint src/**
+            yarn lint
 
   unit-tests:
     executor: default

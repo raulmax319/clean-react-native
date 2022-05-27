@@ -13,6 +13,7 @@
     "test:watch": "npm run test -- --watch",
     "test:staged": "npm run test -- --findRelatedTests",
     "test:ci": "npm run test -- --coverage",
+    "lint": "eslint src/**",
     "lint:staged": "npx lint-staged",
     "postinstall": "husky install"
   },
