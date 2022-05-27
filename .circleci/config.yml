@@ -24,13 +24,14 @@ jobs:
             - dependencies-
       - run:
           name: Install dependencies
-          command: yarn install --frozen-lockfile
+          command: |
+            yarn install --frozen-lockfile
       - save_cache:
           key: dependencies-{{ checksum "package.json" }}
           paths: node_modules
-      persist_to_workspace:
-        root: .
-        paths: .
+      - persist_to_workspace:
+          root: .
+          paths: .
 
   lint:
     executor: default
@@ -52,3 +53,14 @@ jobs:
       - store_artifacts:
           path: coverage
           destination: coverage
+
+workflows:
+  build-and-test:
+    jobs:
+      - install-dependencies
+      - lint:
+          requires:
+            - install-dependencies
+      - unit-tests:
+          requires:
+            - install-dependencies
