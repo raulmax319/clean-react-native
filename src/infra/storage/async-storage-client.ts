@@ -8,7 +8,10 @@ export class AsyncStorageClient implements StorageClient {
     try {
       if (!key || !value) throw new Error();
 
-      await AsyncStorage.setItem(key, JSON.stringify(value));
+      const serializedValue =
+        typeof value === 'string' ? value : JSON.stringify(value);
+
+      await AsyncStorage.setItem(key, serializedValue);
       return true;
     } catch (err) {
       return false;
