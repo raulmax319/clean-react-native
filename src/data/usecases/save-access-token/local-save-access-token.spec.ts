@@ -20,4 +20,14 @@ describe('LocalSaveAccessToken', () => {
       accessToken,
     );
   });
+
+  test('should throw if storageClient throws', async () => {
+    const sut = makeSut();
+    jest
+      .spyOn(AsyncStorageClient.shared, 'save')
+      .mockRejectedValueOnce(new Error());
+
+    const promise = sut.save(faker.datatype.uuid());
+    await expect(promise).rejects.toThrow(new Error());
+  });
 });
