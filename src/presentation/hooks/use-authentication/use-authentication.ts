@@ -1,6 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
+import { LocalSaveAccessToken } from '~/data/usecases/save-access-token';
 import { Authentication, AuthenticationParams } from '~/domain/usecases';
+import { AsyncStorageClient } from '~/infra/storage';
 
 export type AuthenticationHook = (
   authentication: Authentication,
@@ -13,7 +14,9 @@ export const useAuthentication: AuthenticationHook = (authentication) => {
     try {
       setLoading(true);
       const response = await authentication.auth(params);
-      void AsyncStorage.setItem('accessToken', response.accessToken);
+      const lsat = new LocalSaveAccessToken(AsyncStorageClient.shared);
+
+      await lsat.save(response.accessToken);
     } catch (error) {
       throw error; // Error instance
     } finally {

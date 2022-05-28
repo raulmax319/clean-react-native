@@ -1,6 +1,6 @@
+import '~/presentation/mocks/use-authentication.mock';
 import React from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react-native';
-import '~/presentation/mocks/use-authentication.mock';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider } from 'styled-components/native';
 import { ActivityIndicator, Button, PressableProps, Text } from 'react-native';
@@ -132,7 +132,7 @@ describe('Login Screen', () => {
     expect(authenticationSpy.params).toEqual({ email, password });
   });
 
-  test('Should throw an error if Authentication fails', () => {
+  test('Should throw an error if Validation fails', () => {
     const error = new UnauthorizedError();
     const { result, validationSpy } = makeLoginComponent();
     const primaryButton = result.getByTestId('primary-button');
@@ -188,5 +188,20 @@ describe('Login Screen', () => {
     fireEvent.press(button);
 
     expect(activityIndicator.children.length).toBe(0);
+  });
+
+  test('should fail password validation', () => {
+    const { result, validationSpy } = makeLoginComponent();
+    const primaryButton = result.getByTestId('primary-button');
+    const emailInput = result.getByTestId('email-input').findByType(TextInput);
+    const email = faker.internet.email();
+
+    fireEvent.changeText(emailInput, email);
+
+    validationSpy.shouldPass = true;
+    validationSpy.errorMessage = 'error.message';
+    fireEvent.press(primaryButton);
+
+    expect(validationSpy.errorMessage).toBe('error.message');
   });
 });
