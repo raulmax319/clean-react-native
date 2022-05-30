@@ -1,4 +1,4 @@
-import '~/presentation/mocks/use-authentication.mock';
+import '<root>/__mocks__/use-authentication.mock';
 import React from 'react';
 import { cleanup, fireEvent, render } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,11 +6,11 @@ import { ThemeProvider } from 'styled-components/native';
 import { ActivityIndicator, Button, PressableProps, Text } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { faker } from '@faker-js/faker';
-import { AuthenticationSpy, ValidationSpy } from '../../mocks';
 import { UnauthorizedError } from '~/domain/errors';
 import theme from '~/presentation/theme';
 import Login from '~/presentation/screens/login';
-import * as hooks from '../../hooks';
+import * as hooks from '~/presentation/hooks';
+import { AuthenticationSpy, ValidationSpy } from '<root>/__mocks__';
 
 const withTheme = (component: React.ReactNode) => {
   return <ThemeProvider theme={theme}>{component}</ThemeProvider>;

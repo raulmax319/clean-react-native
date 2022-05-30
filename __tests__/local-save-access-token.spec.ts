@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AsyncStorageClient } from '~/infra/storage';
-import { LocalSaveAccessToken } from './local-save-access-token';
+import { LocalSaveAccessToken } from '~/data/usecases/save-access-token/local-save-access-token';
 
 const makeSut = () => {
   const storageClient = AsyncStorageClient.shared;
