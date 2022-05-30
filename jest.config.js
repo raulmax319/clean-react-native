@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'react-native',
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/__tests__/'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{ts,tsx}',
     '!<rootDir>/src/**/*.styles.ts',
@@ -15,10 +15,11 @@ module.exports = {
   },
   moduleNameMapper: {
     '~/(.*)': '<rootDir>/src/$1',
+    '<root>/(.*)': '<rootDir>/$1',
   },
   setupFiles: [
     './node_modules/react-native-gesture-handler/jestSetup.js',
-    './__mocks__/mock-async-storage.js',
+    '<rootDir>/__mocks__/mock-async-storage.js',
   ],
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
   transformIgnorePatterns: [
