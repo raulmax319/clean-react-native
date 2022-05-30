@@ -1,10 +1,13 @@
-import '../../mocks/use-authentication.mock';
+import '<root>/__mocks__/use-authentication.mock';
 import { act, renderHook } from '@testing-library/react-hooks';
 import {
   AuthenticationSpy,
   AuthenticationSpyRejection,
-} from '~/presentation/mocks';
-import { AuthenticationHook, useAuthentication } from './use-authentication';
+} from '<root>/__mocks__';
+import {
+  AuthenticationHook,
+  useAuthentication,
+} from '~/presentation/hooks/use-authentication/use-authentication';
 import { Authentication } from '~/domain/usecases';
 
 describe('Authentication Hook', () => {

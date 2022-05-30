@@ -1,11 +1,14 @@
 import { faker } from '@faker-js/faker';
-import { HttpPostClientSpy } from '~/data/mocks';
+import {
+  HttpPostClientSpy,
+  mockAccountModel,
+  mockAuthentication,
+} from '<root>/__mocks__';
 import { HttpStatusCode } from '~/data/protocols/http';
 import { UnauthorizedError, UnexpectedError } from '~/domain/errors';
-import { mockAccountModel, mockAuthentication } from '~/domain/mocks';
 import { AccountModel } from '~/domain/models';
 import { AuthenticationParams } from '~/domain/usecases';
-import { RemoteAuthentication } from './remote-authentication';
+import { RemoteAuthentication } from '~/data/usecases/authentication/remote-authentication';
 
 type SutTypes = {
   sut: RemoteAuthentication;
