@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AsyncStorageClient } from '~/infra/storage';
 import { LocalSaveAccessToken } from '~/data/usecases/save-access-token/local-save-access-token';
