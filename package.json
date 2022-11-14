@@ -15,7 +15,7 @@
     "test:ci": "npm run test -- --coverage",
     "lint": "eslint src/**",
     "lint:staged": "npx lint-staged",
-    "postinstall": "husky install"
+    "postinstall": "husky install && sh scripts/generate-ios-proj.sh"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.6",
