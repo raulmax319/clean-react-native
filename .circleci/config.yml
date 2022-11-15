@@ -1,9 +1,19 @@
 version: 2.1
 
 executors:
-  default:
+  node:
     docker:
       - image: cimg/node:16.15.0
+    working_directory: ~/project
+  macOS-iOS:
+    macos:
+      xcode: '14.1'
+    environment:
+      FL_OUTPUT_DIR: output
+    working_directory: ~/project
+  macOS-android:
+    docker:
+      - image: circleci/android:api-29-node
     working_directory: ~/project
 
 commands:
@@ -11,13 +21,17 @@ commands:
     steps:
       - attach_workspace:
           at: ~/project
+  config_dependencies:
+    steps:
+      - run: brew install xcodegen
 
 jobs:
   install-dependencies:
-    executor: default
+    executor: macOS
     steps:
       - checkout
       - attach_project
+      - config_dependencies
       - restore_cache:
           keys:
             - dependencies-{{ checksum "package.json" }}
@@ -34,7 +48,7 @@ jobs:
           paths: .
 
   lint:
-    executor: default
+    executor: macOS
     steps:
       - attach_project
       - run:
@@ -43,7 +57,7 @@ jobs:
             yarn lint
 
   unit-tests:
-    executor: default
+    executor: macOS-iOS
     steps:
       - attach_project
       - run:
@@ -53,6 +67,37 @@ jobs:
       - store_artifacts:
           path: coverage
           destination: coverage
+
+  build-iOS:
+    executor: macOS
+    steps:
+      - checkout
+      - attach_project
+      - run:
+          name: Build Debug version for iOS
+          command: |
+            yarn ios
+          name: Bundle iOS
+          command: |
+            bundle install
+          working_directory: ios
+      - store_artifacts:
+          path: output
+          destination: output
+
+  build-android:
+    executor: macOS-android
+    steps:
+      - checkout
+      - attach_project
+      - run:
+          name: Build Debug version for Android
+          command: |
+            yarn android
+          name: Bundle Android
+          command: |
+            bundle install
+          working_directory: android
 
 workflows:
   build-and-test:
@@ -64,3 +109,15 @@ workflows:
       - unit-tests:
           requires:
             - install-dependencies
+      - build-iOS:
+          requires:
+            - install-dependencies
+            - lint
+            - unit-tests
+            # - node
+      - build-android:
+          requires:
+            - install-dependencies
+            - lint
+            - unit-tests
+            # - node
