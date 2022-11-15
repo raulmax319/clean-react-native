@@ -5,13 +5,13 @@ executors:
     docker:
       - image: cimg/node:16.15.0
     working_directory: ~/project
-  macOS-iOS:
+  mac_ios:
     macos:
       xcode: '14.1'
     environment:
       FL_OUTPUT_DIR: output
     working_directory: ~/project
-  macOS-android:
+  mac_android:
     docker:
       - image: circleci/android:api-29-node
     working_directory: ~/project
@@ -27,7 +27,7 @@ commands:
 
 jobs:
   install-dependencies:
-    executor: macOS
+    executor: mac_ios
     steps:
       - checkout
       - attach_project
@@ -48,7 +48,7 @@ jobs:
           paths: .
 
   lint:
-    executor: macOS
+    executor: mac_ios
     steps:
       - attach_project
       - run:
@@ -57,7 +57,7 @@ jobs:
             yarn lint
 
   unit-tests:
-    executor: macOS-iOS
+    executor: mac_ios
     steps:
       - attach_project
       - run:
@@ -69,7 +69,7 @@ jobs:
           destination: coverage
 
   build-iOS:
-    executor: macOS
+    executor: mac_ios
     steps:
       - checkout
       - attach_project
@@ -87,7 +87,7 @@ jobs:
           destination: output
 
   build-android:
-    executor: macOS-android
+    executor: mac_android
     steps:
       - checkout
       - attach_project
