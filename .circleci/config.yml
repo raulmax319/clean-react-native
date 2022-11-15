@@ -9,6 +9,7 @@ executors:
     macos:
       xcode: '14.1'
     environment:
+      HOMEBREW_NO_AUTO_UPDATE: 1
       FL_OUTPUT_DIR: output
     working_directory: ~/project
   mac_android:
@@ -42,10 +43,12 @@ jobs:
             yarn install --frozen-lockfile
       - save_cache:
           key: dependencies-{{ checksum "package.json" }}
-          paths: node_modules
+          paths:
+            - node_modules
       - persist_to_workspace:
-          root: .
-          paths: .
+          root: ~/project
+          paths:
+            - node_modules
 
   lint:
     executor: mac_ios
@@ -74,14 +77,58 @@ jobs:
       - checkout
       - attach_project
 
-      - run:
-          command: |
-            yarn ios
+      - restore_cache:
+          keys:
+            - dependencies-{{ checksum "package.json" }}
+            - dependencies-
 
       - run:
           command: |
+            yarn install --frozen-lockfile
+
+      - save_cache:
+          key: dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+      - restore_cache:
+          keys:
+            - bundle-{{ checksum "ios/Gemfile.lock" }}
+            - bundle-
+
+      - restore_cache:
+          keys:
+            - pods-{{ checksum "ios/Podfile.lock" }}
+            - pods-
+
+      - run:
+          name: Generate Xcode project
+          command: |
+            xcodegen generate
+          working_directory: ios
+
+      - run:
+          name: Install pods
+          command: |
+            pod install
+          working_directory: ios
+
+      - run:
+          name: Bundle iOS
+          command: |
             bundle install
           working_directory: ios
+
+      - save_cache:
+          key: bundle-{{ checksum "ios/Gemfile.lock" }}
+          paths:
+            - ios/vendor/bundle
+
+      - save_cache:
+          key: pods-{{ checksum "ios/Podfile.lock" }}
+          paths:
+            - ios/Pods
+
       - store_artifacts:
           path: output
           destination: output
@@ -92,14 +139,38 @@ jobs:
       - checkout
       - attach_project
 
-      - run:
-          command: |
-            yarn ios
+      - restore_cache:
+          keys:
+            - dependencies-{{ checksum "package.json" }}
+            - dependencies-
 
       - run:
           command: |
+            yarn install --frozen-lockfile
+
+      - save_cache:
+          key: dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+      - restore_cache:
+          keys:
+            - bundle-{{ checksum "Gemfile.lock" }}
+            - bundle-
+
+      - run:
+          name: Bundle Android
+          command: |
             bundle install
           working_directory: android
+
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - store_artifacts:
+          path: test-results
 
 workflows:
   build-and-test:
@@ -116,10 +187,8 @@ workflows:
             - install-dependencies
             - lint
             - unit-tests
-            # - node
       - build-android:
           requires:
             - install-dependencies
             - lint
             - unit-tests
-            # - node
