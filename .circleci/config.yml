@@ -22,9 +22,6 @@ commands:
     steps:
       - attach_workspace:
           at: ~/project
-  config_dependencies:
-    steps:
-      - run: brew install xcodegen
 
 jobs:
   install-dependencies:
@@ -32,7 +29,6 @@ jobs:
     steps:
       - checkout
       - attach_project
-      - config_dependencies
       - restore_cache:
           keys:
             - dependencies-{{ checksum "package.json" }}
@@ -79,6 +75,10 @@ jobs:
       - checkout
       - attach_project
 
+      - run:
+          command: |
+            brew install xcodegen
+
       - restore_cache:
           keys:
             - dependencies-{{ checksum "package.json" }}
@@ -92,16 +92,6 @@ jobs:
           key: dependencies-{{ checksum "package.json" }}
           paths:
             - node_modules
-
-      - restore_cache:
-          keys:
-            - bundle-{{ checksum "ios/Gemfile.lock" }}
-            - bundle-
-
-      - restore_cache:
-          keys:
-            - pods-{{ checksum "ios/Podfile.lock" }}
-            - pods-
 
       - run:
           name: Generate Xcode project
@@ -120,16 +110,6 @@ jobs:
           command: |
             bundle install
           working_directory: ios
-
-      - save_cache:
-          key: bundle-{{ checksum "ios/Gemfile.lock" }}
-          paths:
-            - ios/vendor/bundle
-
-      - save_cache:
-          key: pods-{{ checksum "ios/Podfile.lock" }}
-          paths:
-            - ios/Pods
 
       - store_artifacts:
           path: output
