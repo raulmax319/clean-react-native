@@ -24,6 +24,8 @@ DerivedData
 *.ipa
 *.xcuserstate
 ios/.xcode.env.local
+*.xcodeproj
+*.xcworkspace
 
 # Android/IntelliJ
 #
@@ -66,3 +68,4 @@ buck-out/
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
+Podfile.lock
