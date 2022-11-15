@@ -73,11 +73,12 @@ jobs:
     steps:
       - checkout
       - attach_project
+
       - run:
-          name: Build Debug version for iOS
           command: |
             yarn ios
-          name: Bundle iOS
+
+      - run:
           command: |
             bundle install
           working_directory: ios
@@ -90,11 +91,12 @@ jobs:
     steps:
       - checkout
       - attach_project
+
       - run:
-          name: Build Debug version for Android
           command: |
-            yarn android
-          name: Bundle Android
+            yarn ios
+
+      - run:
           command: |
             bundle install
           working_directory: android
